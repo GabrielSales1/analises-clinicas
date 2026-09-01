@@ -1616,3 +1616,116 @@ html[data-theme="dark"] {
   border-top-color: var(--admin-sidebar-border);
   color: var(--admin-sidebar-text);
 }
+
+
+/* ============================================
+   SUBMENUS - NAVEGAÇÃO
+   ============================================ */
+
+/* Chevron do submenu */
+.nav-chevron {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  font-size: 0.75rem;
+  color: var(--admin-sidebar-muted);
+}
+
+.nav-link:not(.collapsed) .nav-chevron {
+  transform: rotate(180deg);
+}
+
+/* Submenu (itens filhos) */
+.collapse {
+  display: none;
+}
+
+.collapse.show {
+  display: block;
+}
+
+.nav-link.sub {
+  padding: 0.6rem 1.5rem 0.6rem 3.2rem;
+  font-size: 0.85rem;
+  color: var(--admin-sidebar-text);
+  gap: 0.75rem;
+  min-height: 40px;
+}
+
+.nav-link.sub:hover {
+  color: var(--admin-sidebar-text-strong);
+  background: var(--admin-sidebar-soft);
+}
+
+.nav-link.sub .nav-icon {
+  width: 26px;
+  height: 26px;
+  font-size: 0.85rem;
+  background: transparent;
+  color: var(--admin-sidebar-muted);
+}
+
+.nav-link.sub:hover .nav-icon {
+  color: var(--admin-sidebar-icon);
+}
+
+/* Separador */
+.sidebar-divider {
+  padding: 0.75rem 0.9rem 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--admin-sidebar-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-top: 1px solid var(--admin-sidebar-border);
+  margin-top: 0.25rem;
+}
+
+/* Link de Sair */
+.nav-link.text-danger {
+  color: #ef4444 !important;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--admin-sidebar-border);
+}
+
+.nav-link.text-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171 !important;
+}
+
+.nav-link.text-danger .nav-icon {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Modo Mini Sidebar - esconder textos dos submenus */
+body.sidebar-mini .nav-link.sub .nav-text {
+  display: none;
+}
+
+body.sidebar-mini .nav-link.sub {
+  padding: 0.6rem 0.9rem;
+  justify-content: center;
+}
+
+body.sidebar-mini .nav-link.sub .nav-icon {
+  margin: 0;
+}
+
+body.sidebar-mini .nav-chevron {
+  display: none;
+}
+
+body.sidebar-mini .sidebar-divider {
+  font-size: 0;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--admin-sidebar-border);
+}
+
+body.sidebar-mini .sidebar-divider::after {
+  content: "•••";
+  display: block;
+  text-align: center;
+  font-size: 0.6rem;
+  color: var(--admin-sidebar-muted);
+  letter-spacing: 0.3rem;
+}

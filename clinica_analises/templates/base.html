@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="adminHMD professional admin dashboard template">
-  <title>Dashboard | adminHMD</title>
+  <meta name="description" content="Sistema de Gerenciamento para Laboratório de Análises Clínicas">
+  <title>Laboratório de Análises Clínicas</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -16,79 +16,252 @@
     <div class="sidebar-backdrop" data-sidebar-close></div>
 
     <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
+
       <div class="sidebar-header">
-        <a class="brand-mark" href="index.html" aria-label="adminHMD dashboard">
-          <span class="brand-icon"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i></span>
+        <a class="brand-mark" href="index.html" aria-label="Laboratório de Análises Clínicas">
+          <img src="../static/img/imgs/logo.png" alt="Logo" style="width: 68px; height: 68px; border-radius: 8px; object-fit: contain; flex-shrink: 0;">
           <span class="brand-copy">
-            <span class="brand-title">adminHMD</span>
-            <span class="brand-subtitle">Admin Template</span>
+            <span class="brand-title" style="font-size: 1.05rem; font-weight: 800; line-height: 1.2;">ANALISES CLINICAS</span>
           </span>
         </a>
       </div>
 
       <nav class="sidebar-nav">
-        <a class="nav-link active" href="index.html" aria-current="page">
+  
+        <a class="nav-link active" href="dashboard.html" aria-current="page">
           <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
           <span class="nav-text">Dashboard</span>
         </a>
-        <a class="nav-link" href="users.html">
+
+        <div class="sidebar-divider">Gerenciamento</div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-usuarios" aria-expanded="false" aria-controls="submenu-usuarios">
           <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
-          <span class="nav-text">Users</span>
+          <span class="nav-text">Usuários</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
-        <a class="nav-link" href="add-user.html">
-          <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
-          <span class="nav-text">Add User</span>
-        </a>
-        <a class="nav-link" href="profile.html">
+        <div class="collapse" id="submenu-usuarios" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="usuarios-lista.html">
+            <span class="nav-icon"><i class="bi bi-list-ul" aria-hidden="true"></i></span>
+            <span class="nav-text">Listar Usuários</span>
+          </a>
+          <a class="nav-link sub" href="usuarios-novo.html">
+            <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+            <span class="nav-text">Novo Usuário</span>
+          </a>
+          <a class="nav-link sub" href="usuarios-permissoes.html">
+            <span class="nav-icon"><i class="bi bi-shield-lock" aria-hidden="true"></i></span>
+            <span class="nav-text">Permissões</span>
+          </a>
+        </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-funcionarios" aria-expanded="false" aria-controls="submenu-funcionarios">
           <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
-          <span class="nav-text">Profile</span>
+          <span class="nav-text">Funcionários</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
-        <a class="nav-link" href="charts.html">
+        <div class="collapse" id="submenu-funcionarios" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="funcionarios-lista.html">
+            <span class="nav-icon"><i class="bi bi-list-ul" aria-hidden="true"></i></span>
+            <span class="nav-text">Listar Funcionários</span>
+          </a>
+          <a class="nav-link sub" href="funcionarios-novo.html">
+            <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+            <span class="nav-text">Novo Funcionário</span>
+          </a>
+          <a class="nav-link sub" href="funcionarios-cargos.html">
+            <span class="nav-icon"><i class="bi bi-briefcase" aria-hidden="true"></i></span>
+            <span class="nav-text">Cargos</span>
+          </a>
+        </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-pacientes" aria-expanded="false" aria-controls="submenu-pacientes">
+          <span class="nav-icon"><i class="bi bi-person-hearts" aria-hidden="true"></i></span>
+          <span class="nav-text">Pacientes</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
+        </a>
+        <div class="collapse" id="submenu-pacientes" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="pacientes-lista.html">
+            <span class="nav-icon"><i class="bi bi-list-ul" aria-hidden="true"></i></span>
+            <span class="nav-text">Listar Pacientes</span>
+          </a>
+          <a class="nav-link sub" href="pacientes-novo.html">
+            <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+            <span class="nav-text">Novo Paciente</span>
+          </a>
+          <a class="nav-link sub" href="pacientes-historico.html">
+            <span class="nav-icon"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
+            <span class="nav-text">Histórico do Paciente</span>
+          </a>
+        </div>
+
+
+        <div class="sidebar-divider">Exames</div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-tipos-exames" aria-expanded="false" aria-controls="submenu-tipos-exames">
+          <span class="nav-icon"><i class="bi bi-clipboard2-pulse" aria-hidden="true"></i></span>
+          <span class="nav-text">Tipos de Exames</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
+        </a>
+        <div class="collapse" id="submenu-tipos-exames" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="tipos-exames-lista.html">
+            <span class="nav-icon"><i class="bi bi-list-ul" aria-hidden="true"></i></span>
+            <span class="nav-text">Listar Exames</span>
+          </a>
+          <a class="nav-link sub" href="tipos-exames-novo.html">
+            <span class="nav-icon"><i class="bi bi-plus-circle" aria-hidden="true"></i></span>
+            <span class="nav-text">Novo Tipo de Exame</span>
+          </a>
+          <a class="nav-link sub" href="tipos-exames-categorias.html">
+            <span class="nav-icon"><i class="bi bi-tags" aria-hidden="true"></i></span>
+            <span class="nav-text">Categorias</span>
+          </a>
+        </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-solicitacoes" aria-expanded="false" aria-controls="submenu-solicitacoes">
+          <span class="nav-icon"><i class="bi bi-file-earmark-medical" aria-hidden="true"></i></span>
+          <span class="nav-text">Solicitações</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
+        </a>
+        <div class="collapse" id="submenu-solicitacoes" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="solicitacoes-lista.html">
+            <span class="nav-icon"><i class="bi bi-list-ul" aria-hidden="true"></i></span>
+            <span class="nav-text">Listar Solicitações</span>
+          </a>
+          <a class="nav-link sub" href="solicitacoes-nova.html">
+            <span class="nav-icon"><i class="bi bi-plus-circle" aria-hidden="true"></i></span>
+            <span class="nav-text">Nova Solicitação</span>
+          </a>
+          <a class="nav-link sub" href="solicitacoes-situacao.html">
+            <span class="nav-icon"><i class="bi bi-search-heart" aria-hidden="true"></i></span>
+            <span class="nav-text">Situação dos Exames</span>
+          </a>
+        </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-coletas" aria-expanded="false" aria-controls="submenu-coletas">
+          <span class="nav-icon"><i class="bi bi-droplet" aria-hidden="true"></i></span>
+          <span class="nav-text">Coletas</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
+        </a>
+        <div class="collapse" id="submenu-coletas" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="coletas-pendentes.html">
+            <span class="nav-icon"><i class="bi bi-clock" aria-hidden="true"></i></span>
+            <span class="nav-text">Coletas Pendentes</span>
+          </a>
+          <a class="nav-link sub" href="coletas-registrar.html">
+            <span class="nav-icon"><i class="bi bi-pencil-square" aria-hidden="true"></i></span>
+            <span class="nav-text">Registrar Coleta</span>
+          </a>
+          <a class="nav-link sub" href="coletas-realizadas.html">
+            <span class="nav-icon"><i class="bi bi-check-circle" aria-hidden="true"></i></span>
+            <span class="nav-text">Coletas Realizadas</span>
+          </a>
+        </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-resultados" aria-expanded="false" aria-controls="submenu-resultados">
+          <span class="nav-icon"><i class="bi bi-file-earmark-check" aria-hidden="true"></i></span>
+          <span class="nav-text">Resultados</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
+        </a>
+        <div class="collapse" id="submenu-resultados" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="resultados-pendentes.html">
+            <span class="nav-icon"><i class="bi bi-clock" aria-hidden="true"></i></span>
+            <span class="nav-text">Resultados Pendentes</span>
+          </a>
+          <a class="nav-link sub" href="resultados-registrar.html">
+            <span class="nav-icon"><i class="bi bi-pencil-square" aria-hidden="true"></i></span>
+            <span class="nav-text">Registrar Resultados</span>
+          </a>
+          <a class="nav-link sub" href="resultados-validar.html">
+            <span class="nav-icon"><i class="bi bi-check2-square" aria-hidden="true"></i></span>
+            <span class="nav-text">Validar Resultados</span>
+          </a>
+        </div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-laudos" aria-expanded="false" aria-controls="submenu-laudos">
+          <span class="nav-icon"><i class="bi bi-file-earmark-pdf" aria-hidden="true"></i></span>
+          <span class="nav-text">Laudos</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
+        </a>
+        <div class="collapse" id="submenu-laudos" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="laudos-emitir.html">
+            <span class="nav-icon"><i class="bi bi-printer" aria-hidden="true"></i></span>
+            <span class="nav-text">Emitir Laudo</span>
+          </a>
+          <a class="nav-link sub" href="laudos-validar.html">
+            <span class="nav-icon"><i class="bi bi-check2-square" aria-hidden="true"></i></span>
+            <span class="nav-text">Validar Laudo</span>
+          </a>
+          <a class="nav-link sub" href="laudos-consultar.html">
+            <span class="nav-icon"><i class="bi bi-search" aria-hidden="true"></i></span>
+            <span class="nav-text">Consultar Laudos</span>
+          </a>
+        </div>
+
+        <div class="sidebar-divider">Relatórios</div>
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-relatorios" aria-expanded="false" aria-controls="submenu-relatorios">
           <span class="nav-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
-          <span class="nav-text">Charts</span>
+          <span class="nav-text">Relatórios</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
-        <a class="nav-link" href="tables.html">
-          <span class="nav-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
-          <span class="nav-text">Tables</span>
+        <div class="collapse" id="submenu-relatorios" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="relatorios-gerenciais.html">
+            <span class="nav-icon"><i class="bi bi-graph-up" aria-hidden="true"></i></span>
+            <span class="nav-text">Relatórios Gerenciais</span>
+          </a>
+          <a class="nav-link sub" href="relatorios-exames.html">
+            <span class="nav-icon"><i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i></span>
+            <span class="nav-text">Relatório de Exames</span>
+          </a>
+          <a class="nav-link sub" href="relatorios-pacientes.html">
+            <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+            <span class="nav-text">Relatório de Pacientes</span>
+          </a>
+          <a class="nav-link sub" href="relatorios-faturamento.html">
+            <span class="nav-icon"><i class="bi bi-cash-stack" aria-hidden="true"></i></span>
+            <span class="nav-text">Faturamento</span>
+          </a>
+        </div>
+
+        <!-- ==================== CONFIGURAÇÕES ==================== -->
+        <div class="sidebar-divider">Configurações</div>
+
+        <a class="nav-link" href="profile.html">
+          <span class="nav-icon"><i class="bi bi-person-circle" aria-hidden="true"></i></span>
+          <span class="nav-text">Meu Perfil</span>
         </a>
-        <a class="nav-link" href="forms.html">
-          <span class="nav-icon"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i></span>
-          <span class="nav-text">Forms</span>
-        </a>
-        <a class="nav-link" href="components.html">
-          <span class="nav-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
-          <span class="nav-text">Components</span>
-        </a>
-        <a class="nav-link" href="alerts.html">
-          <span class="nav-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
-          <span class="nav-text">Alerts</span>
-        </a>
-        <a class="nav-link" href="modals.html">
-          <span class="nav-icon"><i class="bi bi-window-stack" aria-hidden="true"></i></span>
-          <span class="nav-text">Modals</span>
-        </a>
-        <a class="nav-link" href="settings.html">
+
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-configuracoes" aria-expanded="false" aria-controls="submenu-configuracoes">
           <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
-          <span class="nav-text">Settings</span>
+          <span class="nav-text">Configurações</span>
+          <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
-        <a class="nav-link" href="blank.html">
-          <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
-          <span class="nav-text">Blank Page</span>
+        <div class="collapse" id="submenu-configuracoes" data-bs-parent=".sidebar-nav">
+          <a class="nav-link sub" href="config-geral.html">
+            <span class="nav-icon"><i class="bi bi-sliders2" aria-hidden="true"></i></span>
+            <span class="nav-text">Configurações Gerais</span>
+          </a>
+          <a class="nav-link sub" href="config-lab.html">
+            <span class="nav-icon"><i class="bi bi-hospital" aria-hidden="true"></i></span>
+            <span class="nav-text">Dados do Laboratório</span>
+          </a>
+          <a class="nav-link sub" href="config-backup.html">
+            <span class="nav-icon"><i class="bi bi-database" aria-hidden="true"></i></span>
+            <span class="nav-text">Backup</span>
+          </a>
+        </div>
+
+        <a class="nav-link text-danger" href="logout.html">
+          <span class="nav-icon"><i class="bi bi-box-arrow-right" aria-hidden="true"></i></span>
+          <span class="nav-text">Sair</span>
         </a>
+
       </nav>
-
-      <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="../static/img/avatar/avatar-1.jpg" alt="Admin Hasan">
-        <strong>Admin Hasan</strong>
-        <small>Active Workspace</small>
-      </div>
-
-      <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-      </div>
+      
     </aside>
 
+    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="admin-main">
       <nav class="navbar admin-navbar navbar-expand bg-white">
         <div class="container-fluid px-3 px-lg-4">
@@ -146,7 +319,7 @@
 
       <main class="dashboard-content">
         {% block content %}
-        {% endblock%}
+        {% endblock %}
       </main>
 
       <footer class="admin-footer">
