@@ -10,6 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.secret_key = 'clinica_analises_segredo'
 db.init_app(app)
 
+#função so para criar um usuario padrão de forma funcional antes de uma real criação de usuario 
 def criar_usuario_padrao():
     if not Usuario.query.filter_by(email='admin@admin.com').first():
         usuario = Usuario(
