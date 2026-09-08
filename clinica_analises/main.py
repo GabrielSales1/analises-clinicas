@@ -69,6 +69,16 @@ def logout():
 def dashboard(): 
     return render_template('index.html',user=flask_login.current_user)
 
+@app.route('/tipos_de_exames/listar')
+@flask_login.login_required
+def listar_exames(): 
+    return render_template('tipos_exames/listas_exames.html',user=flask_login.current_user)
+
+@app.route('/tipos_de_exames/novo_tipo_exame')
+@flask_login.login_required
+def novo_tipo_exame(): 
+    return render_template('tipos_exames/novo_tipo_exame.html',user=flask_login.current_user)
+
 if __name__ == '__main__' : 
     with app.app_context(): 
         db.create_all()

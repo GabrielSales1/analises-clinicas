@@ -28,7 +28,7 @@
       </div>
 
       <nav class="sidebar-nav">
-        <a class="nav-link active" href="#">
+        <a class="nav-link active" href="{{url_for('dashboard')}}">
           <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
           <span class="nav-text">Dashboard</span>
         </a>
@@ -71,8 +71,8 @@
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-tipos-exames" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar Exames</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span>Novo Tipo de Exame</a>
+          <a class="nav-link sub" href="{{url_for('listar_exames')}}"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar Exames</a>
+          <a class="nav-link sub" href="{{url_for('novo_tipo_exame')}}"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span>Novo Tipo de Exame</a>
         </div>
 
         <div class="sidebar-divider">Atendimento</div>
@@ -168,7 +168,7 @@
           <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-hospital"></i></span>Dados do Laboratório</a>
         </div>
 
-        <a class="nav-link text-danger" href="#">
+        <a class="nav-link text-danger" href="{{url_for('logout')}}">
           <span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span>
           <span class="nav-text">Sair</span>
         </a>
@@ -210,7 +210,7 @@
                 <li><a class="dropdown-item" href="#">Perfil</a></li>
                 <li><a class="dropdown-item" href="#">Configurações</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Sair</a></li>
+                <li><a class="dropdown-item" href="{{url_for('logout')}}">Sair</a></li>
               </ul>
             </div>
           </div>

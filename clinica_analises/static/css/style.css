@@ -1729,3 +1729,107 @@ body.sidebar-mini .sidebar-divider::after {
   color: var(--admin-sidebar-muted);
   letter-spacing: 0.3rem;
 }
+
+.bg-purple-subtle {
+    background-color: #e9d5ff !important;
+    color: #6b21a5 !important;
+  }
+  
+  .text-purple-emphasis {
+    color: #6b21a5 !important;
+  }
+  
+  .bg-primary-subtle {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+  }
+  
+  .text-primary-emphasis {
+    color: #1e40af !important;
+  }
+  
+  .bg-success-subtle {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+  }
+  
+  .text-success-emphasis {
+    color: #065f46 !important;
+  }
+  
+  .bg-warning-subtle {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+  }
+  
+  .text-warning-emphasis {
+    color: #92400e !important;
+  }
+  
+  .bg-danger-subtle {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+  }
+  
+  .text-danger-emphasis {
+    color: #991b1b !important;
+  }
+  
+  .bg-info-subtle {
+    background-color: #cffafe !important;
+    color: #0e7490 !important;
+  }
+  
+  .text-info-emphasis {
+    color: #0e7490 !important;
+  }
+  
+  .bg-secondary-subtle {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+  }
+  
+  .text-secondary-emphasis {
+    color: #475569 !important;
+  }
+
+  /* Modo escuro */
+  html[data-theme="dark"] .bg-purple-subtle {
+    background-color: #3b1f6e !important;
+    color: #d8b4fe !important;
+  }
+  
+  html[data-theme="dark"] .bg-primary-subtle {
+    background-color: #1e3a5f !important;
+    color: #93c5fd !important;
+  }
+  
+  html[data-theme="dark"] .bg-success-subtle {
+    background-color: #1a3d2f !important;
+    color: #6ee7b7 !important;
+  }
+  
+  html[data-theme="dark"] .bg-warning-subtle {
+    background-color: #4d3b0a !important;
+    color: #fcd34d !important;
+  }
+  
+  html[data-theme="dark"] .bg-danger-subtle {
+    background-color: #4c1c1c !important;
+    color: #fca5a5 !important;
+  }
+  
+  html[data-theme="dark"] .bg-info-subtle {
+    background-color: #164e63 !important;
+    color: #67e8f9 !important;
+  }
+  
+  html[data-theme="dark"] .bg-secondary-subtle {
+    background-color: #2d3748 !important;
+    color: #94a3b8 !important;
+  }
+  
+  html[data-theme="dark"] .mini-card {
+    background: var(--admin-surface-soft);
+    border-color: var(--admin-border);
+  }
