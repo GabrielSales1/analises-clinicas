@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Tipo de Exame - Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-plus-circle"></i></span>
+    <div>
+      <h1 class="h2 mb-1">Novo Tipo de Exame</h1>
+      <p class="text-muted mb-0">Cadastre um novo tipo de exame no sistema</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('listar_exames') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+  </div>
+</div>
+
+<!-- Formulário -->
+<div class="panel">
+  <form id="formNovoExame" method="POST" action="{{ url_for('novo_tipo_exame') }}">
+    <div class="row g-4">
+      
+      <!-- Coluna Esquerda -->
+      <div class="col-lg-8">
+        <!-- Dados Básicos -->
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-clipboard2"></i>
+            Dados do Exame
+          </h5>
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="nome" class="form-label fw-bold">
+                Nome do Exame <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="nome" name="nome" 
+                     placeholder="Digite o nome do exame" required>
+              <div class="form-text">Ex: Hemograma Completo, Glicemia em Jejum, etc.</div>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="codigo" class="form-label fw-bold">
+                Código do Exame <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="codigo" name="codigo" 
+                     placeholder="Ex: HEM-001" required>
+              <div class="form-text">Código único para identificar o exame</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Descrição -->
+        <div class="mb-4">
+          <label for="descricao" class="form-label fw-bold">Descrição</label>
+          <textarea class="form-control" id="descricao" name="descricao" rows="4" 
+                    placeholder="Descreva o exame, sua finalidade e preparo necessário..."></textarea>
+          <div class="form-text">Descrição detalhada do exame para orientação dos pacientes</div>
+        </div>
+
+        <!-- Informações Adicionais -->
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-info-circle"></i>
+            Informações Adicionais
+          </h5>
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="categoria" class="form-label fw-bold">
+                Categoria <span class="text-danger">*</span>
+              </label>
+              <select class="form-select" id="categoria" name="categoria" required>
+                <option value="">Selecione uma categoria...</option>
+                <option value="Hematologia">Hematologia</option>
+                <option value="Bioquímica">Bioquímica</option>
+                <option value="Microbiologia">Microbiologia</option>
+                <option value="Imunologia">Imunologia</option>
+                <option value="Urinálise">Urinálise</option>
+                <option value="Endocrinologia">Endocrinologia</option>
+                <option value="Genética">Genética</option>
+                <option value="Outros">Outros</option>
+              </select>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="subcategoria" class="form-label fw-bold">Subcategoria</label>
+              <input type="text" class="form-control" id="subcategoria" name="subcategoria" 
+                     placeholder="Ex: Hemograma, Lipidograma, etc.">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coluna Direita -->
+      <div class="col-lg-4">
+        <!-- Configurações -->
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-gear"></i>
+            Configurações
+          </h5>
+          
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="preco" class="form-label fw-bold">
+                Preço (R$) <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <input type="number" class="form-control" id="preco" name="preco" 
+                       placeholder="0,00" step="0.01" min="0" required>
+              </div>
+            </div>
+            
+            <div class="col-12">
+              <label for="prazo" class="form-label fw-bold">
+                Prazo de Entrega (dias) <span class="text-danger">*</span>
+              </label>
+              <input type="number" class="form-control" id="prazo" name="prazo" 
+                     placeholder="Ex: 2" min="1" required>
+              <div class="form-text">Número de dias para liberação do resultado</div>
+            </div>
+            
+            <div class="col-12">
+              <label for="status" class="form-label fw-bold">Status</label>
+              <select class="form-select" id="status" name="status">
+                <option value="Ativo" selected>Ativo</option>
+                <option value="Inativo">Inativo</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Requisitos do Paciente -->
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-clipboard2-check"></i>
+            Requisitos do Paciente
+          </h5>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="jejum" name="requisitos" value="jejum">
+            <label class="form-check-label" for="jejum">
+              Jejum necessário
+            </label>
+          </div>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="medicacao" name="requisitos" value="medicacao">
+            <label class="form-check-label" for="medicacao">
+              Suspender medicação
+            </label>
+          </div>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="atividade" name="requisitos" value="atividade">
+            <label class="form-check-label" for="atividade">
+              Evitar atividade física antes
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="outros" name="requisitos" value="outros">
+            <label class="form-check-label" for="outros">
+              Outros requisitos
+            </label>
+          </div>
+          <div class="mt-2" id="outrosRequisitos" style="display: none;">
+            <input type="text" class="form-control" placeholder="Descreva outros requisitos...">
+          </div>
+        </div>
+
+        <!-- Materiais Necessários -->
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-box"></i>
+            Materiais Necessários
+          </h5>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="tubo_amarelo" name="materiais" value="tubo_amarelo">
+            <label class="form-check-label" for="tubo_amarelo">
+              Tubo amarelo (gel separador)
+            </label>
+          </div>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="tubo_roxo" name="materiais" value="tubo_roxo">
+            <label class="form-check-label" for="tubo_roxo">
+              Tubo roxo (EDTA)
+            </label>
+          </div>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="tubo_azul" name="materiais" value="tubo_azul">
+            <label class="form-check-label" for="tubo_azul">
+              Tubo azul (citrato)
+            </label>
+          </div>
+          
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="swab" name="materiais" value="swab">
+            <label class="form-check-label" for="swab">
+              Swab estéril
+            </label>
+          </div>
+          
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="outros_materiais" name="materiais" value="outros">
+            <label class="form-check-label" for="outros_materiais">
+              Outros materiais
+            </label>
+          </div>
+          <div class="mt-2" id="outrosMateriais" style="display: none;">
+            <input type="text" class="form-control" placeholder="Descreva outros materiais...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Rodapé do Formulário -->
+      <div class="col-12">
+        <hr>
+        <div class="d-flex flex-wrap gap-2 justify-content-end">
+          <a href="{{ url_for('listar_exames') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle"></i> Cancelar
+          </a>
+          <button type="reset" class="btn btn-outline-warning">
+            <i class="bi bi-arrow-counterclockwise"></i> Limpar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check2-circle"></i> Salvar Exame
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Scripts -->
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar campos de "Outros" quando selecionado
+    const outrosCheckbox = document.getElementById('outros');
+    const outrosDiv = document.getElementById('outrosRequisitos');
+    
+    if (outrosCheckbox && outrosDiv) {
+      outrosCheckbox.addEventListener('change', function() {
+        outrosDiv.style.display = this.checked ? 'block' : 'none';
+      });
+    }
+    
+    const outrosMateriaisCheckbox = document.getElementById('outros_materiais');
+    const outrosMateriaisDiv = document.getElementById('outrosMateriais');
+    
+    if (outrosMateriaisCheckbox && outrosMateriaisDiv) {
+      outrosMateriaisCheckbox.addEventListener('change', function() {
+        outrosMateriaisDiv.style.display = this.checked ? 'block' : 'none';
+      });
+    }
+
+    // Máscara para preço
+    const precoInput = document.getElementById('preco');
+    if (precoInput) {
+      precoInput.addEventListener('blur', function() {
+        if (this.value) {
+          let valor = parseFloat(this.value);
+          if (!isNaN(valor)) {
+            this.value = valor.toFixed(2);
+          }
+        }
+      });
+    }
+
+    // Validação do formulário
+    const form = document.getElementById('formNovoExame');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const nome = document.getElementById('nome');
+        const codigo = document.getElementById('codigo');
+        const categoria = document.getElementById('categoria');
+        const preco = document.getElementById('preco');
+        const prazo = document.getElementById('prazo');
+        
+        let isValid = true;
+        let errorMessages = [];
+
+        // Validar nome
+        if (!nome.value.trim()) {
+          isValid = false;
+          nome.classList.add('is-invalid');
+          errorMessages.push('O nome do exame é obrigatório');
+        } else {
+          nome.classList.remove('is-invalid');
+        }
+
+        // Validar código
+        if (!codigo.value.trim()) {
+          isValid = false;
+          codigo.classList.add('is-invalid');
+          errorMessages.push('O código do exame é obrigatório');
+        } else {
+          codigo.classList.remove('is-invalid');
+        }
+
+        // Validar categoria
+        if (!categoria.value) {
+          isValid = false;
+          categoria.classList.add('is-invalid');
+          errorMessages.push('A categoria é obrigatória');
+        } else {
+          categoria.classList.remove('is-invalid');
+        }
+
+        // Validar preço
+        if (!preco.value || parseFloat(preco.value) <= 0) {
+          isValid = false;
+          preco.classList.add('is-invalid');
+          errorMessages.push('O preço deve ser maior que 0');
+        } else {
+          preco.classList.remove('is-invalid');
+        }
+
+        // Validar prazo
+        if (!prazo.value || parseInt(prazo.value) <= 0) {
+          isValid = false;
+          prazo.classList.add('is-invalid');
+          errorMessages.push('O prazo deve ser maior que 0');
+        } else {
+          prazo.classList.remove('is-invalid');
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+          // Mostrar alerta com erros
+          alert('Por favor, corrija os seguintes erros:\n\n' + errorMessages.join('\n'));
+        }
+      });
+    }
+
+    // Remover classe de erro ao digitar
+    document.querySelectorAll('.form-control, .form-select').forEach(input => {
+      input.addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+      });
+    });
+  });
+</script>
+
+<style>
+  /* Estilos adicionais para o formulário */
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--admin-text);
+  }
+  
+  .section-title i {
+    font-size: 1.1rem;
+  }
+  
+  .form-label {
+    font-size: 0.9rem;
+  }
+  
+  .form-text {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+  
+  .form-check-label {
+    font-size: 0.9rem;
+  }
+  
+  /* Campos obrigatórios */
+  .is-invalid {
+    border-color: #dc2626 !important;
+  }
+  
+  .is-invalid:focus {
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12) !important;
+  }
+  
+  /* Estilo para o painel */
+  .panel {
+    background: var(--admin-surface);
+    border-radius: 8px;
+    padding: 1.75rem;
+  }
+  
+  /* Modo escuro */
+  html[data-theme="dark"] .panel {
+    background: var(--admin-surface);
+  }
+  
+  html[data-theme="dark"] .section-title i {
+    background: #1e3a5f;
+    color: #bfdbfe;
+  }
+  
+  /* Responsivo */
+  @media (max-width: 767.98px) {
+    .panel {
+      padding: 1.25rem;
+    }
+    
+    .page-heading-copy {
+      flex-wrap: wrap;
+    }
+  }
+  
+  @media (max-width: 575.98px) {
+    .panel {
+      padding: 1rem;
+    }
+  }
+</style>
+{% endblock %}
+{% endblock %}
