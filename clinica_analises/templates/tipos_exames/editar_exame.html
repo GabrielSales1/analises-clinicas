@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Novo Exame - Laboratório de Análises Clínicas{% endblock %}
+{% block title %}Editar Exame - Laboratório de Análises Clínicas{% endblock %}
 
 {% block content %}
 <div class="page-heading">
   <div class="page-heading-copy">
-    <span class="page-icon"><i class="bi bi-plus-circle"></i></span>
+    <span class="page-icon"><i class="bi bi-pencil-square"></i></span>
     <div>
-      <h1 class="h3 mb-0">Novo Exame</h1>
-      <p class="text-muted small">Cadastre um novo exame no catálogo do laboratório</p>
+      <h1 class="h3 mb-0">Editar Exame</h1>
+      <p class="text-muted small">Atualize as informações do exame cadastrado</p>
     </div>
   </div>
   <div class="heading-actions">
@@ -19,10 +19,9 @@
 </div>
 
 <div class="panel">
-  <form method="POST" action="{{ url_for('novo_tipo_exame') }}">
+  <form method="POST" action="{{ url_for('editar_exame', id=exame.id) }}">
     <div class="row g-4">
       
-      <!-- Coluna Esquerda -->
       <div class="col-lg-8">
         <div class="mb-4">
           <h5 class="section-title mb-3">
@@ -34,14 +33,14 @@
                 Nome do Exame <span class="text-danger">*</span>
               </label>
               <input type="text" class="form-control" id="nome" name="nome" 
-                     placeholder="Ex: Hemograma Completo" required>
+                     value="{{ exame.nome }}" required>
               <div class="form-text">Nome completo do exame</div>
             </div>
             <div class="col-md-6">
               <label for="codigo" class="form-label fw-bold">Código</label>
               <div class="input-group">
                 <input type="text" class="form-control" id="codigo" name="codigo" 
-                       placeholder="Ex: HEM-001">
+                       value="{{ exame.codigo or '' }}" placeholder="Ex: HEM-001">
                 <button type="button" class="btn btn-outline-primary" onclick="gerarCodigo()" title="Gerar código automaticamente">
                   <i class="bi bi-magic"></i>
                 </button>
@@ -54,7 +53,7 @@
         <div class="mb-4">
           <label for="descricao" class="form-label fw-bold">Descrição</label>
           <textarea class="form-control" id="descricao" name="descricao" rows="3" 
-                    placeholder="Descreva o exame, sua finalidade e preparo necessário..."></textarea>
+                    placeholder="Descreva o exame, sua finalidade e preparo necessário...">{{ exame.descricao or '' }}</textarea>
           <div class="form-text">Descrição detalhada para orientação</div>
         </div>
 
@@ -69,14 +68,14 @@
               </label>
               <select class="form-select" id="categoria" name="categoria" required>
                 <option value="">Selecione...</option>
-                <option value="Hematologia">🩸 Hematologia</option>
-                <option value="Bioquímica">🧪 Bioquímica</option>
-                <option value="Microbiologia">🦠 Microbiologia</option>
-                <option value="Imunologia">🛡️ Imunologia</option>
-                <option value="Urinálise">💧 Urinálise</option>
-                <option value="Endocrinologia">🧬 Endocrinologia</option>
-                <option value="Genética">🧬 Genética</option>
-                <option value="Outros">📦 Outros</option>
+                <option value="Hematologia" {% if exame.categoria == 'Hematologia' %}selected{% endif %}>Hematologia</option>
+                <option value="Bioquímica" {% if exame.categoria == 'Bioquímica' %}selected{% endif %}>Bioquímica</option>
+                <option value="Microbiologia" {% if exame.categoria == 'Microbiologia' %}selected{% endif %}>Microbiologia</option>
+                <option value="Imunologia" {% if exame.categoria == 'Imunologia' %}selected{% endif %}>Imunologia</option>
+                <option value="Urinálise" {% if exame.categoria == 'Urinálise' %}selected{% endif %}>Urinálise</option>
+                <option value="Endocrinologia" {% if exame.categoria == 'Endocrinologia' %}selected{% endif %}>Endocrinologia</option>
+                <option value="Genética" {% if exame.categoria == 'Genética' %}selected{% endif %}>Genética</option>
+                <option value="Outros" {% if exame.categoria == 'Outros' %}selected{% endif %}>Outros</option>
               </select>
               <div class="form-text">Categoria do exame</div>
             </div>
@@ -84,35 +83,36 @@
               <label for="unidade_medida" class="form-label fw-bold">Unidade de Medida</label>
               <select class="form-select" id="unidade_medida" name="unidade_medida" onchange="atualizarPlaceholderValorReferencia()">
                 <option value="">Selecione...</option>
-                <option value="mg/dL">mg/dL (miligrama por decilitro)</option>
-                <option value="ng/mL">ng/mL (nanograma por mililitro)</option>
-                <option value="mmol/L">mmol/L (milimol por litro)</option>
-                <option value="mUI/L">mUI/L (milunidade internacional por litro)</option>
-                <option value="pg/mL">pg/mL (picograma por mililitro)</option>
-                <option value="µg/dL">µg/dL (micrograma por decilitro)</option>
-                <option value="UFC/mL">UFC/mL (unidade formadora de colônia por mL)</option>
-                <option value="UI/L">UI/L (unidade internacional por litro)</option>
-                <option value="g/dL">g/dL (grama por decilitro)</option>
-                <option value="%">% (porcentagem)</option>
-                <option value="pH">pH (potencial hidrogeniônico)</option>
-                <option value="Outros">Outros (especificar)</option>
+                <option value="mg/dL" {% if exame.unidade_medida == 'mg/dL' %}selected{% endif %}>mg/dL</option>
+                <option value="ng/mL" {% if exame.unidade_medida == 'ng/mL' %}selected{% endif %}>ng/mL</option>
+                <option value="mmol/L" {% if exame.unidade_medida == 'mmol/L' %}selected{% endif %}>mmol/L</option>
+                <option value="mUI/L" {% if exame.unidade_medida == 'mUI/L' %}selected{% endif %}>mUI/L</option>
+                <option value="pg/mL" {% if exame.unidade_medida == 'pg/mL' %}selected{% endif %}>pg/mL</option>
+                <option value="µg/dL" {% if exame.unidade_medida == 'µg/dL' %}selected{% endif %}>µg/dL</option>
+                <option value="UFC/mL" {% if exame.unidade_medida == 'UFC/mL' %}selected{% endif %}>UFC/mL</option>
+                <option value="UI/L" {% if exame.unidade_medida == 'UI/L' %}selected{% endif %}>UI/L</option>
+                <option value="g/dL" {% if exame.unidade_medida == 'g/dL' %}selected{% endif %}>g/dL</option>
+                <option value="%" {% if exame.unidade_medida == '%' %}selected{% endif %}>%</option>
+                <option value="pH" {% if exame.unidade_medida == 'pH' %}selected{% endif %}>pH</option>
+                <option value="Outros" {% if exame.unidade_medida == 'Outros' %}selected{% endif %}>Outros</option>
               </select>
               <div class="form-text">Unidade utilizada para o resultado do exame</div>
-              <div id="outrosUnidadeContainer" style="display: none; margin-top: 8px;">
-                <input type="text" class="form-control" id="outros_unidade" name="outros_unidade" placeholder="Digite a unidade de medida...">
+              <div id="outrosUnidadeContainer" >
+                <input type="text" class="form-control" id="outros_unidade" name="outros_unidade" 
+                       value="{{ exame.unidade_medida if exame.unidade_medida == 'Outros' else '' }}" 
+                       placeholder="Digite a unidade de medida...">
               </div>
             </div>
             <div class="col-md-12">
               <label for="valor_referencia" class="form-label fw-bold">Valor de Referência</label>
               <input type="text" class="form-control" id="valor_referencia" name="valor_referencia" 
-                     placeholder="Ex: 70-100 mg/dL" onfocus="atualizarPlaceholderValorReferencia()">
+                     value="{{ exame.valor_referencia or '' }}" placeholder="Ex: 70-100 mg/dL">
               <div class="form-text" id="valor_referencia_help">Valores normais para referência</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Coluna Direita -->
       <div class="col-lg-4">
         <div class="mb-4">
           <h5 class="section-title mb-3">
@@ -124,9 +124,9 @@
                 Preço <span class="text-danger">*</span>
               </label>
               <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                <span class="input-group-text">R$</span>
                 <input type="number" class="form-control" id="preco" name="preco" 
-                       placeholder="0,00" step="0.01" min="0" required>
+                       value="{{ exame.preco or 0 }}" step="0.01" min="0" required>
               </div>
             </div>
             <div class="col-12">
@@ -134,7 +134,7 @@
                 Prazo de Entrega <span class="text-danger">*</span>
               </label>
               <input type="text" class="form-control" id="tempo_resultado" name="tempo_resultado" 
-                     placeholder="Ex: 24h, 48h, 3 dias" required>
+                     value="{{ exame.tempo_resultado or '' }}" placeholder="Ex: 24h, 48h, 3 dias" required>
               <div class="form-text">Tempo para liberação do resultado</div>
             </div>
           </div>
@@ -145,7 +145,7 @@
             <i class="bi bi-clipboard2-check text-primary"></i> Preparo do Paciente
           </h5>
           <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="preparo_jejum" name="preparo_necessario" value="Jejum">
+            <input class="form-check-input" type="checkbox" id="preparo_jejum" name="preparo_necessario" value="Jejum" >
             <label class="form-check-label" for="preparo_jejum">Jejum necessário</label>
           </div>
           <div class="form-check mb-2">
@@ -160,8 +160,9 @@
             <input class="form-check-input" type="checkbox" id="preparo_outros" name="preparo_necessario" value="Outros">
             <label class="form-check-label" for="preparo_outros">Outros preparos</label>
           </div>
-          <div class="mt-2" id="outrosPreparoContainer" style="display: none;">
+          <div class="mt-2" id="outrosPreparoContainer" >
             <input type="text" class="form-control" name="preparo_necessario_outros" 
+                   value="{{ exame.preparo_necessario if exame.preparo_necessario and 'Outros' in exame.preparo_necessario else '' }}"
                    placeholder="Descreva outros preparos...">
           </div>
         </div>
@@ -171,16 +172,15 @@
             <i class="bi bi-toggle-on text-primary"></i> Status
           </h5>
           <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="ativo" name="ativo" checked>
+            <input class="form-check-input" type="checkbox" id="ativo" name="ativo" {% if exame.ativo %}checked{% endif %}>
             <label class="form-check-label" for="ativo">
-              <span class="fw-bold">Exame disponível</span>
-              <span class="text-muted d-block small">Aparecerá nas solicitações</span>
+              <span class="fw-bold">{{ 'Exame disponível' if exame.ativo else 'Exame indisponível' }}</span>
+              <span class="text-muted d-block small">{{ 'Aparecerá nas solicitações' if exame.ativo else 'Não aparecerá nas solicitações' }}</span>
             </label>
           </div>
         </div>
       </div>
 
-      <!-- Rodapé -->
       <div class="col-12">
         <hr>
         <div class="d-flex flex-wrap gap-2 justify-content-end">
@@ -191,7 +191,7 @@
             <i class="bi bi-arrow-counterclockwise me-1"></i> Limpar
           </button>
           <button type="submit" class="btn btn-primary">
-            <i class="bi bi-check2-circle me-1"></i> Salvar Exame
+            <i class="bi bi-check2-circle me-1"></i> Atualizar Exame
           </button>
         </div>
       </div>
@@ -199,23 +199,22 @@
   </form>
 </div>
 
-<!-- Scripts -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Mostrar campo "Outros preparos"
     const outrosCheckbox = document.getElementById('preparo_outros');
     const outrosContainer = document.getElementById('outrosPreparoContainer');
-    
     if (outrosCheckbox && outrosContainer) {
       outrosCheckbox.addEventListener('change', function() {
         outrosContainer.style.display = this.checked ? 'block' : 'none';
+        if (!this.checked) {
+          const input = outrosContainer.querySelector('input');
+          if (input) input.value = '';
+        }
       });
     }
 
-    // Mostrar campo "Outros" na unidade de medida
     const unidadeSelect = document.getElementById('unidade_medida');
     const outrosUnidadeContainer = document.getElementById('outrosUnidadeContainer');
-    
     if (unidadeSelect && outrosUnidadeContainer) {
       unidadeSelect.addEventListener('change', function() {
         if (this.value === 'Outros') {
@@ -227,7 +226,6 @@
       });
     }
 
-    // Máscara para preço
     const precoInput = document.getElementById('preco');
     if (precoInput) {
       precoInput.addEventListener('blur', function() {
@@ -239,72 +237,10 @@
         }
       });
     }
-
-    // Validação do formulário
-    const form = document.querySelector('form');
-    if (form) {
-      form.addEventListener('submit', function(e) {
-        const nome = document.getElementById('nome');
-        const categoria = document.getElementById('categoria');
-        const preco = document.getElementById('preco');
-        const tempo = document.getElementById('tempo_resultado');
-        
-        let isValid = true;
-        let errors = [];
-
-        if (!nome.value.trim()) {
-          isValid = false;
-          nome.classList.add('is-invalid');
-          errors.push('Nome do exame é obrigatório');
-        } else {
-          nome.classList.remove('is-invalid');
-        }
-
-        if (!categoria.value) {
-          isValid = false;
-          categoria.classList.add('is-invalid');
-          errors.push('Categoria é obrigatória');
-        } else {
-          categoria.classList.remove('is-invalid');
-        }
-
-        if (!preco.value || parseFloat(preco.value) <= 0) {
-          isValid = false;
-          preco.classList.add('is-invalid');
-          errors.push('Preço deve ser maior que 0');
-        } else {
-          preco.classList.remove('is-invalid');
-        }
-
-        if (!tempo.value.trim()) {
-          isValid = false;
-          tempo.classList.add('is-invalid');
-          errors.push('Prazo de entrega é obrigatório');
-        } else {
-          tempo.classList.remove('is-invalid');
-        }
-
-        if (!isValid) {
-          e.preventDefault();
-          alert('Por favor, corrija os seguintes erros:\n\n' + errors.join('\n'));
-        }
-      });
-    }
-
-    // Remover erro ao digitar
-    document.querySelectorAll('.form-control, .form-select').forEach(function(input) {
-      input.addEventListener('input', function() {
-        this.classList.remove('is-invalid');
-      });
-    });
   });
 
-  // ============================================
-  // FUNÇÃO GERAR CÓDIGO
-  // ============================================
   function gerarCodigo() {
-    const categoriaSelect = document.getElementById('categoria');
-    const categoria = categoriaSelect.value;
+    const categoria = document.getElementById('categoria').value;
     const nome = document.getElementById('nome').value.trim();
     const codigoInput = document.getElementById('codigo');
 
@@ -338,16 +274,11 @@
       }
     }
 
-    // Simula um número incremental (na prática, você buscaria do banco)
     const ultimoNumero = Math.floor(Math.random() * 999) + 1;
-    const numeroFormatado = String(ultimoNumero).padStart(3, '0');
-    const codigo = `${prefixo}-${numeroFormatado}`;
-
+    const codigo = `${prefixo}-${String(ultimoNumero).padStart(3, '0')}`;
     codigoInput.value = codigo;
-    codigoInput.classList.remove('is-invalid');
     codigoInput.focus();
 
-    // Feedback visual
     const btn = document.querySelector('.input-group .btn-outline-primary');
     if (btn) {
       const originalHtml = btn.innerHTML;
@@ -362,9 +293,6 @@
     }
   }
 
-  // ============================================
-  // FUNÇÃO ATUALIZAR PLACEHOLDER VALOR REFERÊNCIA
-  // ============================================
   function atualizarPlaceholderValorReferencia() {
     const unidade = document.getElementById('unidade_medida').value;
     const valorRefInput = document.getElementById('valor_referencia');
