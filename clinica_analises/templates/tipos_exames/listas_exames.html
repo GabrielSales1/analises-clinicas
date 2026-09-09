@@ -1,445 +1,339 @@
 {% extends "base.html" %}
 
-{% block title %}Listar Exames - Laboratório de Análises Clínicas{% endblock %}
+{% block title %}Exames - Laboratório de Análises Clínicas{% endblock %}
 
 {% block content %}
 <div class="page-heading">
   <div class="page-heading-copy">
     <span class="page-icon"><i class="bi bi-clipboard2-pulse"></i></span>
     <div>
-      <h1 class="h2 mb-1">Lista de Exames</h1>
-      <p class="text-muted mb-0">Gerencie todos os tipos de exames do laboratório</p>
+      <h1 class="h3 mb-0">Catálogo de Exames</h1>
+      <p class="text-muted small">Gerencie todos os exames disponíveis no laboratório</p>
     </div>
   </div>
   <div class="heading-actions">
     <a href="{{ url_for('novo_tipo_exame') }}" class="btn btn-primary">
-      <i class="bi bi-plus-circle"></i> Novo Exame
+      <i class="bi bi-plus-circle me-1"></i> Novo Exame
     </a>
   </div>
 </div>
 
-<!-- Filtros e Busca -->
-<div class="panel mb-4">
-  <div class="row g-3">
-    <div class="col-md-4">
-      <div class="input-group">
-        <span class="input-group-text bg-transparent"><i class="bi bi-search"></i></span>
-        <input type="text" class="form-control" id="searchExame" placeholder="Buscar exame..." aria-label="Buscar">
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="panel mb-3">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label fw-bold small">Buscar</label>
+      <input type="text" id="buscaInput" class="form-control" placeholder="Digite para filtrar..." 
+             oninput="filtrarExames()">
     </div>
     <div class="col-md-3">
-      <select class="form-select" id="filterStatus">
-        <option value="">Todos os status</option>
-        <option value="Ativo">Ativo</option>
-        <option value="Inativo">Inativo</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <select class="form-select" id="filterCategoria">
-        <option value="">Todas as categorias</option>
-        <option value="Hematologia">Hematologia</option>
-        <option value="Bioquímica">Bioquímica</option>
-        <option value="Microbiologia">Microbiologia</option>
-        <option value="Imunologia">Imunologia</option>
-        <option value="Urinálise">Urinálise</option>
+      <label class="form-label fw-bold small">Categoria</label>
+      <select id="categoriaSelect" class="form-select" onchange="filtrarExames()">
+        <option value="">Todas</option>
+        <option value="Hematologia">🩸 Hematologia</option>
+        <option value="Bioquímica">🧪 Bioquímica</option>
+        <option value="Microbiologia">🦠 Microbiologia</option>
+        <option value="Imunologia">🛡️ Imunologia</option>
+        <option value="Urinálise">💧 Urinálise</option>
+        <option value="Endocrinologia">🧬 Endocrinologia</option>
+        <option value="Genética">🧬 Genética</option>
+        <option value="Outros">📦 Outros</option>
       </select>
     </div>
     <div class="col-md-2">
-      <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
-        <i class="bi bi-arrow-counterclockwise"></i> Limpar
+      <label class="form-label fw-bold small">Status</label>
+      <select id="statusSelect" class="form-select" onchange="filtrarExames()">
+        <option value="">Todos</option>
+        <option value="ativo">✅ Ativos</option>
+        <option value="inativo">❌ Inativos</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-secondary w-100" onclick="limparFiltros()">
+        <i class="bi bi-arrow-counterclockwise me-1"></i> Limpar Filtros
       </button>
+    </div>
+  </div>
+  <div class="mt-2 small">
+    <span id="contadorExames" class="text-muted">Mostrando 0 exames</span>
+  </div>
+</div>
+
+<div class="row g-2 mb-3">
+  <div class="col-md-3">
+    <div class="card bg-primary-subtle border-primary border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-primary-emphasis">{{ exames|length }}</span>
+        <span class="text-muted small">Total</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-success-subtle border-success border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-success-emphasis">{{ exames|selectattr('ativo', 'equalto', True)|list|length }}</span>
+        <span class="text-muted small">Ativos</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-danger-subtle border-danger border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-danger-emphasis">{{ exames|selectattr('ativo', 'equalto', False)|list|length }}</span>
+        <span class="text-muted small">Inativos</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-purple-subtle border-purple border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-purple-emphasis">8</span>
+        <span class="text-muted small">Categorias</span>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Tabela de Exames -->
 <div class="panel">
+  {% if exames %}
   <div class="table-responsive">
     <table class="table table-hover align-middle" id="tabelaExames">
       <thead>
         <tr>
-          <th class="text-nowrap">ID</th>
-          <th class="text-nowrap">Código</th>
-          <th class="text-nowrap">Nome do Exame</th>
-          <th class="text-nowrap">Categoria</th>
-          <th class="text-nowrap">Preço (R$)</th>
-          <th class="text-nowrap">Prazo (dias)</th>
-          <th class="text-nowrap">Status</th>
-          <th class="text-nowrap text-end">Ações</th>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Código</th>
+          <th>Preço</th>
+          <th>Prazo</th>
+          <th>Status</th>
+          <th class="text-end">Ações</th>
         </tr>
       </thead>
-      <tbody>
-        <!-- Exame 1 -->
-        <tr>
-          <td><strong>1</strong></td>
-          <td><code>HEM-001</code></td>
+      <tbody id="corpoTabela">
+        {% for exame in exames %}
+        <tr data-nome="{{ exame.nome|lower }}" 
+            data-categoria="{{ exame.categoria }}" 
+            data-ativo="{{ exame.ativo|lower }}">
+          <td><span class="fw-bold text-muted">#{{ exame.id }}</span></td>
           <td>
-            <div class="table-media">
+            <div class="d-flex align-items-center gap-2">
               <span class="badge bg-primary-subtle text-primary-emphasis p-2">
-                <i class="bi bi-droplet"></i>
+                <i class="bi bi-file-medical"></i>
               </span>
-              <span>Hemograma Completo</span>
+              <div>
+                <strong>{{ exame.nome }}</strong>
+                {% if exame.descricao %}
+                <div class="text-muted small">{{ exame.descricao|truncate(60) }}</div>
+                {% endif %}
+              </div>
             </div>
           </td>
-          <td><span class="badge bg-info-subtle text-info-emphasis">Hematologia</span></td>
-          <td><strong>R$ 45,00</strong></td>
-          <td>2</td>
-          <td><span class="badge bg-success">Ativo</span></td>
-          <td class="text-end">
-            <div class="btn-group" role="group">
-              <button class="btn btn-sm btn-outline-primary" title="Visualizar">
-                <i class="bi bi-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning" title="Editar">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" title="Excluir">
-                <i class="bi bi-trash3"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Exame 2 -->
-        <tr>
-          <td><strong>2</strong></td>
-          <td><code>BIO-002</code></td>
           <td>
-            <div class="table-media">
-              <span class="badge bg-success-subtle text-success-emphasis p-2">
-                <i class="bi bi-activity"></i>
-              </span>
-              <span>Glicemia em Jejum</span>
-            </div>
+            <span class="badge bg-info-subtle text-info-emphasis">
+              <i class="bi bi-tag me-1"></i> {{ exame.categoria }}
+            </span>
           </td>
-          <td><span class="badge bg-warning-subtle text-warning-emphasis">Bioquímica</span></td>
-          <td><strong>R$ 25,00</strong></td>
-          <td>1</td>
-          <td><span class="badge bg-success">Ativo</span></td>
-          <td class="text-end">
-            <div class="btn-group" role="group">
-              <button class="btn btn-sm btn-outline-primary" title="Visualizar">
-                <i class="bi bi-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning" title="Editar">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" title="Excluir">
-                <i class="bi bi-trash3"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Exame 3 -->
-        <tr>
-          <td><strong>3</strong></td>
-          <td><code>MIC-003</code></td>
+          <td><code>{{ exame.codigo or '-' }}</code></td>
+          <td><strong>R$ {{ "%.2f"|format(exame.preco) if exame.preco else '0,00' }}</strong></td>
           <td>
-            <div class="table-media">
-              <span class="badge bg-danger-subtle text-danger-emphasis p-2">
-                <i class="bi bi-bug"></i>
-              </span>
-              <span>Urocultura com Antibiograma</span>
-            </div>
+            <span class="badge bg-warning-subtle text-warning-emphasis">
+              <i class="bi bi-clock me-1"></i> {{ exame.tempo_resultado or '-' }}
+            </span>
           </td>
-          <td><span class="badge bg-danger-subtle text-danger-emphasis">Microbiologia</span></td>
-          <td><strong>R$ 120,00</strong></td>
-          <td>7</td>
-          <td><span class="badge bg-success">Ativo</span></td>
-          <td class="text-end">
-            <div class="btn-group" role="group">
-              <button class="btn btn-sm btn-outline-primary" title="Visualizar">
-                <i class="bi bi-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning" title="Editar">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" title="Excluir">
-                <i class="bi bi-trash3"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Exame 4 -->
-        <tr>
-          <td><strong>4</strong></td>
-          <td><code>IMU-004</code></td>
           <td>
-            <div class="table-media">
-              <span class="badge bg-purple-subtle text-purple-emphasis p-2">
-                <i class="bi bi-shield"></i>
+            {% if exame.ativo %}
+              <span class="badge bg-success-subtle text-success-emphasis">
+                <i class="bi bi-check-circle me-1"></i> Ativo
               </span>
-              <span>Teste Rápido COVID-19</span>
-            </div>
+            {% else %}
+              <span class="badge bg-danger-subtle text-danger-emphasis">
+                <i class="bi bi-x-circle me-1"></i> Inativo
+              </span>
+            {% endif %}
           </td>
-          <td><span class="badge bg-secondary-subtle text-secondary-emphasis">Imunologia</span></td>
-          <td><strong>R$ 80,00</strong></td>
-          <td>1</td>
-          <td><span class="badge bg-success">Ativo</span></td>
           <td class="text-end">
-            <div class="btn-group" role="group">
-              <button class="btn btn-sm btn-outline-primary" title="Visualizar">
+            <div class="btn-group btn-group-sm" role="group">
+              <a href="{{ url_for('detalhes_exame', id=exame.id) }}" class="btn btn-outline-info" title="Ver detalhes">
                 <i class="bi bi-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning" title="Editar">
+              </a>
+              <a href="{{ url_for('editar_exame', id=exame.id) }}" class="btn btn-outline-primary" title="Editar">
                 <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" title="Excluir">
-                <i class="bi bi-trash3"></i>
-              </button>
+              </a>
+              <a href="{{ url_for('deletar_exame', id=exame.id) }}" class="btn btn-outline-danger" title="Excluir"
+                 onclick="return confirm('Tem certeza que deseja excluir o exame {{ exame.nome }}?')">
+                <i class="bi bi-trash"></i>
+              </a>
             </div>
           </td>
         </tr>
-
-        <!-- Exame 5 -->
-        <tr>
-          <td><strong>5</strong></td>
-          <td><code>HEM-005</code></td>
-          <td>
-            <div class="table-media">
-              <span class="badge bg-primary-subtle text-primary-emphasis p-2">
-                <i class="bi bi-clock-history"></i>
-              </span>
-              <span>Coagulograma</span>
-            </div>
-          </td>
-          <td><span class="badge bg-info-subtle text-info-emphasis">Hematologia</span></td>
-          <td><strong>R$ 65,00</strong></td>
-          <td>3</td>
-          <td><span class="badge bg-warning">Inativo</span></td>
-          <td class="text-end">
-            <div class="btn-group" role="group">
-              <button class="btn btn-sm btn-outline-primary" title="Visualizar">
-                <i class="bi bi-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning" title="Editar">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" title="Excluir">
-                <i class="bi bi-trash3"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Exame 6 -->
-        <tr>
-          <td><strong>6</strong></td>
-          <td><code>URI-006</code></td>
-          <td>
-            <div class="table-media">
-              <span class="badge bg-warning-subtle text-warning-emphasis p-2">
-                <i class="bi bi-droplet-half"></i>
-              </span>
-              <span>Urina Tipo I (EAS)</span>
-            </div>
-          </td>
-          <td><span class="badge bg-warning-subtle text-warning-emphasis">Urinálise</span></td>
-          <td><strong>R$ 30,00</strong></td>
-          <td>2</td>
-          <td><span class="badge bg-success">Ativo</span></td>
-          <td class="text-end">
-            <div class="btn-group" role="group">
-              <button class="btn btn-sm btn-outline-primary" title="Visualizar">
-                <i class="bi bi-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning" title="Editar">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" title="Excluir">
-                <i class="bi bi-trash3"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Exame 7 -->
-        <tr>
-          <td><strong>7</strong></td>
-          <td><code>BIO-007</code></td>
-          <td>
-            <div class="table-media">
-              <span class="badge bg-success-subtle text-success-emphasis p-2">
-                <i class="bi bi-heart-pulse"></i>
-              </span>
-              <span>Perfil Lipídico</span>
-            </div>
-          </td>
-          <td><span class="badge bg-warning-subtle text-warning-emphasis">Bioquímica</span></td>
-          <td><strong>R$ 55,00</strong></td>
-          <td>3</td>
-          <td><span class="badge bg-success">Ativo</span></td>
-          <td class="text-end">
-            <div class="btn-group" role="group">
-              <button class="btn btn-sm btn-outline-primary" title="Visualizar">
-                <i class="bi bi-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning" title="Editar">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" title="Excluir">
-                <i class="bi bi-trash3"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Exame 8 -->
-        <tr>
-          <td><strong>8</strong></td>
-          <td><code>IMU-008</code></td>
-          <td>
-            <div class="table-media">
-              <span class="badge bg-secondary-subtle text-secondary-emphasis p-2">
-                <i class="bi bi-virus2"></i>
-              </span>
-              <span>Teste Rápido Dengue</span>
-            </div>
-          </td>
-          <td><span class="badge bg-secondary-subtle text-secondary-emphasis">Imunologia</span></td>
-          <td><strong>R$ 70,00</strong></td>
-          <td>1</td>
-          <td><span class="badge bg-success">Ativo</span></td>
-          <td class="text-end">
-            <div class="btn-group" role="group">
-              <button class="btn btn-sm btn-outline-primary" title="Visualizar">
-                <i class="bi bi-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning" title="Editar">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger" title="Excluir">
-                <i class="bi bi-trash3"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
-
-  <!-- Paginação -->
-  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4 pt-3 border-top">
-    <div class="text-muted small">
-      Mostrando <strong>8</strong> de <strong>8</strong> exames
+  {% else %}
+  <div class="text-center py-5">
+    <div class="mb-3">
+      <i class="bi bi-clipboard2-x display-1 text-muted"></i>
     </div>
-    <nav aria-label="Navegação de páginas">
-      <ul class="pagination pagination-sm mb-0">
-        <li class="page-item disabled">
-          <a class="page-link" href="#" tabindex="-1">Anterior</a>
-        </li>
-        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-        <li class="page-item disabled">
-          <a class="page-link" href="#">Próximo</a>
-        </li>
-      </ul>
-    </nav>
+    <h4 class="mb-2">Nenhum exame cadastrado</h4>
+    <p class="text-muted">Clique em <strong>"Novo Exame"</strong> para começar.</p>
+    <a href="{{ url_for('novo_tipo_exame') }}" class="btn btn-primary mt-2">
+      <i class="bi bi-plus-circle me-1"></i> Cadastrar Primeiro Exame
+    </a>
   </div>
+  {% endif %}
 </div>
 
-<!-- Resumo Rápido -->
-<div class="row g-3 mt-2">
-  <div class="col-md-3 col-6">
-    <div class="mini-card text-center">
-      <span>Total de Exames</span>
-      <strong>8</strong>
-    </div>
-  </div>
-  <div class="col-md-3 col-6">
-    <div class="mini-card text-center">
-      <span>Ativos</span>
-      <strong class="text-success">7</strong>
-    </div>
-  </div>
-  <div class="col-md-3 col-6">
-    <div class="mini-card text-center">
-      <span>Inativos</span>
-      <strong class="text-warning">1</strong>
-    </div>
-  </div>
-  <div class="col-md-3 col-6">
-    <div class="mini-card text-center">
-      <span>Categorias</span>
-      <strong>5</strong>
-    </div>
-  </div>
-</div>
-
-<!-- Scripts de Filtro -->
-{% block extra_js %}
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchExame');
-    const filterStatus = document.getElementById('filterStatus');
-    const filterCategoria = document.getElementById('filterCategoria');
-    const table = document.getElementById('tabelaExames');
-    const rows = table.querySelectorAll('tbody tr');
-
-    function filterTable() {
-      const searchTerm = searchInput.value.toLowerCase().trim();
-      const statusFilter = filterStatus.value;
-      const categoriaFilter = filterCategoria.value;
-
-      rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        const nomeExame = cells[2]?.textContent?.toLowerCase() || '';
-        const codigoExame = cells[1]?.textContent?.toLowerCase() || '';
-        const statusBadge = cells[6]?.textContent?.trim() || '';
-        const categoriaBadge = cells[3]?.textContent?.trim() || '';
-
-        let show = true;
-
-        // Filtro de busca
-        if (searchTerm) {
-          show = nomeExame.includes(searchTerm) || codigoExame.includes(searchTerm);
-        }
-
-        // Filtro de status
-        if (show && statusFilter) {
-          show = statusBadge === statusFilter;
-        }
-
-        // Filtro de categoria
-        if (show && categoriaFilter) {
-          show = categoriaBadge === categoriaFilter;
-        }
-
-        row.style.display = show ? '' : 'none';
-      });
-
-      // Atualizar contador
-      const visibleRows = table.querySelectorAll('tbody tr[style*="display: none"]');
-      const total = rows.length;
-      const visible = total - visibleRows.length;
-      const counter = document.querySelector('.text-muted small');
-      if (counter) {
-        counter.innerHTML = `Mostrando <strong>${visible}</strong> de <strong>${total}</strong> exames`;
+function filtrarExames() {
+  const busca = document.getElementById('buscaInput').value.toLowerCase().trim();
+  const categoria = document.getElementById('categoriaSelect').value;
+  const status = document.getElementById('statusSelect').value;
+  
+  const linhas = document.querySelectorAll('#corpoTabela tr');
+  let visiveis = 0;
+  
+  linhas.forEach(function(linha) {
+    const nome = linha.dataset.nome || '';
+    const cat = linha.dataset.categoria || '';
+    const ativo = linha.dataset.ativo === 'true';
+    
+    let mostrar = true;
+    
+    if (busca) {
+      const descricao = linha.querySelector('.text-muted.small')?.textContent?.toLowerCase() || '';
+      if (!nome.includes(busca) && !descricao.includes(busca)) {
+        mostrar = false;
       }
     }
-
-    // Event listeners
-    searchInput.addEventListener('input', filterTable);
-    filterStatus.addEventListener('change', filterTable);
-    filterCategoria.addEventListener('change', filterTable);
-  });
-
-  function resetFilters() {
-    document.getElementById('searchExame').value = '';
-    document.getElementById('filterStatus').value = '';
-    document.getElementById('filterCategoria').value = '';
     
-    const rows = document.querySelectorAll('#tabelaExames tbody tr');
-    rows.forEach(row => row.style.display = '');
-    
-    const total = rows.length;
-    const counter = document.querySelector('.text-muted small');
-    if (counter) {
-      counter.innerHTML = `Mostrando <strong>${total}</strong> de <strong>${total}</strong> exames`;
+    if (categoria && cat !== categoria) {
+      mostrar = false;
     }
-  }
+    
+    if (status === 'ativo' && !ativo) {
+      mostrar = false;
+    }
+    if (status === 'inativo' && ativo) {
+      mostrar = false;
+    }
+    
+    linha.style.display = mostrar ? '' : 'none';
+    if (mostrar) visiveis++;
+  });
+  
+  document.getElementById('contadorExames').textContent = 
+    `Mostrando ${visiveis} exame${visiveis !== 1 ? 's' : ''}`;
+}
+
+function limparFiltros() {
+  document.getElementById('buscaInput').value = '';
+  document.getElementById('categoriaSelect').value = '';
+  document.getElementById('statusSelect').value = '';
+  filtrarExames();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  filtrarExames();
+});
 </script>
 
-{% endblock %}
+<style>
+  .panel {
+    background: var(--admin-surface);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid var(--admin-border);
+    box-shadow: var(--admin-shadow-sm);
+  }
+  html[data-theme="dark"] .panel {
+    background: var(--admin-surface);
+  }
+  .bg-purple-subtle {
+    background-color: #e9d5ff !important;
+    color: #6b21a5 !important;
+  }
+  .text-purple-emphasis {
+    color: #6b21a5 !important;
+  }
+  .bg-primary-subtle {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+  }
+  .text-primary-emphasis {
+    color: #1e40af !important;
+  }
+  .bg-success-subtle {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+  }
+  .text-success-emphasis {
+    color: #065f46 !important;
+  }
+  .bg-warning-subtle {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+  }
+  .text-warning-emphasis {
+    color: #92400e !important;
+  }
+  .bg-danger-subtle {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+  }
+  .text-danger-emphasis {
+    color: #991b1b !important;
+  }
+  .bg-info-subtle {
+    background-color: #cffafe !important;
+    color: #0e7490 !important;
+  }
+  .text-info-emphasis {
+    color: #0e7490 !important;
+  }
+  .border-opacity-25 {
+    --bs-border-opacity: 0.25;
+  }
+  html[data-theme="dark"] .bg-purple-subtle {
+    background-color: #3b1f6e !important;
+    color: #d8b4fe !important;
+  }
+  html[data-theme="dark"] .bg-primary-subtle {
+    background-color: #1e3a5f !important;
+    color: #93c5fd !important;
+  }
+  html[data-theme="dark"] .bg-success-subtle {
+    background-color: #1a3d2f !important;
+    color: #6ee7b7 !important;
+  }
+  html[data-theme="dark"] .bg-warning-subtle {
+    background-color: #4d3b0a !important;
+    color: #fcd34d !important;
+  }
+  html[data-theme="dark"] .bg-danger-subtle {
+    background-color: #4c1c1c !important;
+    color: #fca5a5 !important;
+  }
+  html[data-theme="dark"] .bg-info-subtle {
+    background-color: #164e63 !important;
+    color: #67e8f9 !important;
+  }
+  @media (max-width: 767.98px) {
+    .panel {
+      padding: 1rem;
+    }
+  }
+</style>
 {% endblock %}
