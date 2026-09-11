@@ -3,39 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="adminHMD authentication page">
-  <title>Login | adminHMD</title>
+  <meta name="description" content="Sistema de Gerenciamento para Laboratório de Análises Clínicas">
+  <title>Login | Laboratório de Análises Clínicas</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../static/css/style.css">
 </head>
 
 <body class="auth-body">
-  <button class="icon-button theme-toggle auth-theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
+
+  <button class="icon-button theme-toggle auth-theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema" title="Alternar tema">
     <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
   </button>
+
   <main class="auth-page">
     <section class="auth-card">
-      <a class="auth-brand" href="index.html"><span class="brand-icon"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i></span><span><strong>adminHMD</strong><small>Sign in to your admin workspace.</small></span></a>
-      <div class="auth-visual"><img src="../static/img/png/dasher-ui-bootstrap-5.jpg" alt="adminHMD dashboard interface"></div>
-      <form class="needs-validation" novalidate>
-        <div class="mb-4">
-          <p class="eyebrow mb-1">Secure Access</p>
-          <h1 class="h3 mb-1">Login</h1>
-          <p class="text-muted mb-0">Sign in to your admin workspace.</p>
+
+      {% if error %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-circle me-2"></i> {{ error }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>
-        <div class="mb-3"><label class="form-label" for="loginEmail">Email address</label><input class="form-control" id="loginEmail" type="email" required><div class="invalid-feedback">Enter a valid email.</div></div>
-        <div class="mb-3"><div class="d-flex justify-content-between"><label class="form-label" for="loginPassword">Password</label><a class="small fw-semibold" href="forgot-password.html">Forgot?</a></div><input class="form-control" id="loginPassword" type="password" minlength="6" required><div class="invalid-feedback">Password must be at least 6 characters.</div></div>
-        <div class="form-check mb-4"><input class="form-check-input" type="checkbox" id="rememberMe"><label class="form-check-label" for="rememberMe">Remember me</label></div>
-        <button class="btn btn-primary w-100" type="submit"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Sign In</button>
+      {% endif %}
+
+      <form class="needs-validation" method="POST" action="/" novalidate>
+
+        <div class="text-center mb-4">
+          <img src="../static/img/imgs/logo.webp" alt="Logo do Laboratório"
+               class="img-fluid"
+               style="width: 120px; height: 120px; border-radius: 12px; object-fit: contain; display: block; margin: 0 auto;">
+          <h1 class="h4 mt-3 mb-0" style="font-weight: 700; color: var(--admin-text, #1f2937);">
+            Laboratório de Análises Clínicas
+          </h1>
+          <p class="text-muted small" style="margin-top: 0.25rem;">Sistema de Gerenciamento</p>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="loginUsuario">Usuário</label>
+          <input class="form-control" id="loginUsuario" type="text" name="nome"
+                 placeholder="Digite seu usuário" required autofocus>
+          <div class="invalid-feedback">Por favor, digite seu usuário.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="loginPassword">Senha</label>
+          <input class="form-control" id="loginPassword" type="password" name="senha"
+                 placeholder="Digite sua senha" minlength="6" required>
+          <div class="invalid-feedback">A senha deve ter pelo menos 6 caracteres.</div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="rememberMe">
+            <label class="form-check-label" for="rememberMe">Lembrar-me</label>
+          </div>
+        </div>
+
+        <button class="btn btn-primary w-100" type="submit">
+          <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i> Entrar
+        </button>
+
+        <div class="auth-footer mt-3">
+          <small class="text-muted">Acesso restrito – apenas usuários autorizados</small>
+        </div>
       </form>
-      
-      <div class="auth-footer">New here? <a href="register.html">Create an account</a></div>
+
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../static/js/main.js"></script>
 </body>
 </html>
