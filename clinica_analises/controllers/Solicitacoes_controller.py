@@ -8,23 +8,24 @@ from main import app
 def solicitacao_listar(): 
     return render_template('<p>teste</p>')
 
-@app.route('/solicitacao/nova')
+@app.route('/solicitacao/nova',  methods=['GET', 'POST'])
 @flask_login.login_required
-def listar_nova(): 
+def solicitacao_nova(): 
+
     return render_template('<p>teste</p>')
 
 @app.route('/solicitacao/situacao/id')
 @flask_login.login_required
-def listar_situacao(): 
+def lsolicitacao_situacao(): 
     return render_template('<p>teste</p>')
 
 @app.route('/solicitacao/situacao/id')
 @flask_login.login_required
-def listar_situacao(): 
+def solicitacao_editar(): 
     return render_template('<p>teste</p>')
 
 @app.route('/solicitacao/cancelar/id')
 @flask_login.login_required
-def listar_cancelar(): 
+def solicitacao_cancelar(): 
     return render_template('<p>teste</p>')
 
