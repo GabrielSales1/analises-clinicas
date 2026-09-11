@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Paciente | Laboratório{% endblock %}
+
+{% block content %}
+
+<style>
+    .cadastro-paciente-page {
+        padding: 30px 0;
+    }
+
+    .cadastro-paciente-card {
+        max-width: 700px;
+        margin: 0 auto;
+        background: var(--bs-body-bg, #fff);
+        border: 1px solid var(--bs-border-color, #dee2e6);
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        padding: 35px;
+    }
+
+    .cadastro-paciente-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .icone-paciente {
+        width: 65px;
+        height: 65px;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #eaf3ff;
+        color: #0d6efd;
+        font-size: 28px;
+    }
+
+    .cadastro-paciente-header h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--bs-body-color);
+        margin-bottom: 8px;
+    }
+
+    .cadastro-paciente-header p {
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .formulario-paciente {
+        border-top: 1px solid var(--bs-border-color, #dee2e6);
+        padding-top: 30px;
+    }
+
+    .campo-paciente {
+        margin-bottom: 20px;
+    }
+
+    .campo-paciente label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--bs-body-color);
+    }
+
+    .campo-paciente input {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        background: var(--bs-body-bg, #fff);
+        color: var(--bs-body-color);
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .campo-paciente input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+    }
+
+    .btn-cadastrar-paciente {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #0d6efd;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-cadastrar-paciente:hover {
+        background: #0b5ed7;
+    }
+
+    .btn-voltar-paciente {
+        width: 100%;
+        margin-top: 10px;
+        padding: 11px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--bs-body-color);
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .btn-voltar-paciente:hover {
+        background: #f1f3f5;
+    }
+
+    @media (max-width: 600px) {
+        .cadastro-paciente-card {
+            padding: 22px;
+        }
+
+        .cadastro-paciente-page {
+            padding: 15px 0;
+        }
+    }
+</style>
+
+
+<div class="cadastro-paciente-page">
+
+    <div class="cadastro-paciente-card">
+
+        <!-- CABEÇALHO -->
+        <div class="cadastro-paciente-header">
+
+            <div class="icone-paciente">
+                <i class="bi bi-person-hearts"></i>
+            </div>
+
+            <h1>Novo Paciente</h1>
+
+            <p>
+                Preencha os dados para cadastrar um novo paciente
+            </p>
+
+        </div>
+
+
+        <!-- FORMULÁRIO -->
+        <div class="formulario-paciente">
+
+            <form method="POST" action="#">
+
+                <!-- NOME -->
+                <div class="campo-paciente">
+
+                    <label for="nome">
+                        Nome completo
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Digite o nome completo"
+                        autocomplete="name"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- E-MAIL -->
+                <div class="campo-paciente">
+
+                    <label for="email">
+                        E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="exemplo@email.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- SENHA -->
+                <div class="campo-paciente">
+
+                    <label for="senha">
+                        Senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Digite a senha"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- CONFIRMAR SENHA -->
+                <div class="campo-paciente">
+
+                    <label for="confirmar_senha">
+                        Confirmar senha
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmar_senha"
+                        name="confirmar_senha"
+                        placeholder="Confirme a senha"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- BOTÃO -->
+                <button
+                    type="submit"
+                    class="btn-cadastrar-paciente"
+                >
+                    <i class="bi bi-person-plus me-2"></i>
+                    Cadastrar paciente
+                </button>
+
+
+                <!-- VOLTAR -->
+                <button
+                    type="button"
+                    class="btn-voltar-paciente"
+                    onclick="history.back()"
+                >
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Voltar
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
