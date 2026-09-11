@@ -1,4 +1,90 @@
 {% extends "base.html" %}
+
+{% block title %}Dashboard | Laboratório{% endblock %}
+
 {% block content %}
-<h1 class="fs-5">Hello World</h1>
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-speedometer2"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Dashboard</h1>
+      <p class="text-muted small">Bem-vindo, {{ session.get('usuario_nome', 'Usuário') }}!</p>
+    </div>
+  </div>
+</div>
+
+<!-- Cards de métricas -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="metric-card metric-primary">
+      <div class="d-flex align-items-center gap-2">
+        <span class="metric-label">Pacientes</span>
+        <span class="metric-icon ms-auto"><i class="bi bi-people"></i></span>
+      </div>
+      <div class="metric-value">{{ total_pacientes or 0 }}</div>
+      <div class="metric-meta">Total de pacientes cadastrados</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="metric-card metric-success">
+      <div class="d-flex align-items-center gap-2">
+        <span class="metric-label">Exames Hoje</span>
+        <span class="metric-icon ms-auto"><i class="bi bi-clipboard2-pulse"></i></span>
+      </div>
+      <div class="metric-value">{{ total_exames_hoje or 0 }}</div>
+      <div class="metric-meta">Solicitações realizadas hoje</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="metric-card metric-warning">
+      <div class="d-flex align-items-center gap-2">
+        <span class="metric-label">Pendentes</span>
+        <span class="metric-icon ms-auto"><i class="bi bi-clock-history"></i></span>
+      </div>
+      <div class="metric-value">{{ coletas_pendentes or 0 }}</div>
+      <div class="metric-meta">Coletas aguardando</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="metric-card metric-danger">
+      <div class="d-flex align-items-center gap-2">
+        <span class="metric-label">Resultados</span>
+        <span class="metric-icon ms-auto"><i class="bi bi-file-earmark-check"></i></span>
+      </div>
+      <div class="metric-value">{{ resultados_pendentes or 0 }}</div>
+      <div class="metric-meta">Laudos pendentes de validação</div>
+    </div>
+  </div>
+</div>
+
+<!-- Atividades Recentes -->
+<div class="panel">
+  <div class="panel-header">
+    <div>
+      <h2 class="h5 mb-1">Atividades Recentes</h2>
+      <p class="text-muted small">Últimas ações no sistema.</p>
+    </div>
+  </div>
+  <div class="activity-list">
+    {% if atividades %}
+      {% for atividade in atividades %}
+      <div class="activity-item">
+        <span class="activity-dot bg-primary"></span>
+        <div>
+          <strong>{{ atividade.descricao }}</strong>
+          <div class="text-muted small">{{ atividade.data }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="activity-item">
+        <span class="activity-dot bg-secondary"></span>
+        <div>
+          <strong>Nenhuma atividade registrada</strong>
+          <div class="text-muted small">Aguardando movimentações.</div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

@@ -1,0 +1,453 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Exame - Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-plus-circle"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Novo Exame</h1>
+      <p class="text-muted small">Cadastre um novo exame no catálogo do laboratório</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('listar_exames') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Voltar
+    </a>
+  </div>
+</div>
+
+<div class="panel">
+  <form method="POST" action="{{ url_for('novo_tipo_exame') }}">
+    <div class="row g-4">
+      
+      <!-- Coluna Esquerda -->
+      <div class="col-lg-8">
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-clipboard2 text-primary"></i> Dados do Exame
+          </h5>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="nome" class="form-label fw-bold">
+                Nome do Exame <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="nome" name="nome" 
+                     placeholder="Ex: Hemograma Completo" required>
+              <div class="form-text">Nome completo do exame</div>
+            </div>
+            <div class="col-md-6">
+              <label for="codigo" class="form-label fw-bold">Código</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="codigo" name="codigo" 
+                       placeholder="Ex: HEM-001">
+                <button type="button" class="btn btn-outline-primary" onclick="gerarCodigo()" title="Gerar código automaticamente">
+                  <i class="bi bi-magic"></i>
+                </button>
+              </div>
+              <div class="form-text">Código interno (clique no ✨ para gerar)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="descricao" class="form-label fw-bold">Descrição</label>
+          <textarea class="form-control" id="descricao" name="descricao" rows="3" 
+                    placeholder="Descreva o exame, sua finalidade e preparo necessário..."></textarea>
+          <div class="form-text">Descrição detalhada para orientação</div>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-info-circle text-primary"></i> Especificações
+          </h5>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="categoria" class="form-label fw-bold">
+                Categoria <span class="text-danger">*</span>
+              </label>
+              <select class="form-select" id="categoria" name="categoria" required>
+                <option value="">Selecione...</option>
+                <option value="Hematologia">🩸 Hematologia</option>
+                <option value="Bioquímica">🧪 Bioquímica</option>
+                <option value="Microbiologia">🦠 Microbiologia</option>
+                <option value="Imunologia">🛡️ Imunologia</option>
+                <option value="Urinálise">💧 Urinálise</option>
+                <option value="Endocrinologia">🧬 Endocrinologia</option>
+                <option value="Genética">🧬 Genética</option>
+                <option value="Outros">📦 Outros</option>
+              </select>
+              <div class="form-text">Categoria do exame</div>
+            </div>
+            <div class="col-md-6">
+              <label for="unidade_medida" class="form-label fw-bold">Unidade de Medida</label>
+              <select class="form-select" id="unidade_medida" name="unidade_medida" onchange="atualizarPlaceholderValorReferencia()">
+                <option value="">Selecione...</option>
+                <option value="mg/dL">mg/dL (miligrama por decilitro)</option>
+                <option value="ng/mL">ng/mL (nanograma por mililitro)</option>
+                <option value="mmol/L">mmol/L (milimol por litro)</option>
+                <option value="mUI/L">mUI/L (milunidade internacional por litro)</option>
+                <option value="pg/mL">pg/mL (picograma por mililitro)</option>
+                <option value="µg/dL">µg/dL (micrograma por decilitro)</option>
+                <option value="UFC/mL">UFC/mL (unidade formadora de colônia por mL)</option>
+                <option value="UI/L">UI/L (unidade internacional por litro)</option>
+                <option value="g/dL">g/dL (grama por decilitro)</option>
+                <option value="%">% (porcentagem)</option>
+                <option value="pH">pH (potencial hidrogeniônico)</option>
+                <option value="Outros">Outros (especificar)</option>
+              </select>
+              <div class="form-text">Unidade utilizada para o resultado do exame</div>
+              <div id="outrosUnidadeContainer" style="display: none; margin-top: 8px;">
+                <input type="text" class="form-control" id="outros_unidade" name="outros_unidade" placeholder="Digite a unidade de medida...">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <label for="valor_referencia" class="form-label fw-bold">Valor de Referência</label>
+              <input type="text" class="form-control" id="valor_referencia" name="valor_referencia" 
+                     placeholder="Ex: 70-100 mg/dL" onfocus="atualizarPlaceholderValorReferencia()">
+              <div class="form-text" id="valor_referencia_help">Valores normais para referência</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coluna Direita -->
+      <div class="col-lg-4">
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-gear text-primary"></i> Configurações
+          </h5>
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="preco" class="form-label fw-bold">
+                Preço <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                <input type="number" class="form-control" id="preco" name="preco" 
+                       placeholder="0,00" step="0.01" min="0" required>
+              </div>
+            </div>
+            <div class="col-12">
+              <label for="tempo_resultado" class="form-label fw-bold">
+                Prazo de Entrega <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" id="tempo_resultado" name="tempo_resultado" 
+                     placeholder="Ex: 24h, 48h, 3 dias" required>
+              <div class="form-text">Tempo para liberação do resultado</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-clipboard2-check text-primary"></i> Preparo do Paciente
+          </h5>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="preparo_jejum" name="preparo_necessario" value="Jejum">
+            <label class="form-check-label" for="preparo_jejum">Jejum necessário</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="preparo_medicacao" name="preparo_necessario" value="Suspender medicação">
+            <label class="form-check-label" for="preparo_medicacao">Suspender medicação</label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="preparo_atividade" name="preparo_necessario" value="Evitar atividade física">
+            <label class="form-check-label" for="preparo_atividade">Evitar atividade física</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="preparo_outros" name="preparo_necessario" value="Outros">
+            <label class="form-check-label" for="preparo_outros">Outros preparos</label>
+          </div>
+          <div class="mt-2" id="outrosPreparoContainer" style="display: none;">
+            <input type="text" class="form-control" name="preparo_necessario_outros" 
+                   placeholder="Descreva outros preparos...">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h5 class="section-title mb-3">
+            <i class="bi bi-toggle-on text-primary"></i> Status
+          </h5>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="ativo" name="ativo" checked>
+            <label class="form-check-label" for="ativo">
+              <span class="fw-bold">Exame disponível</span>
+              <span class="text-muted d-block small">Aparecerá nas solicitações</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rodapé -->
+      <div class="col-12">
+        <hr>
+        <div class="d-flex flex-wrap gap-2 justify-content-end">
+          <a href="{{ url_for('listar_exames') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle me-1"></i> Cancelar
+          </a>
+          <button type="reset" class="btn btn-outline-warning">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Limpar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check2-circle me-1"></i> Salvar Exame
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Scripts -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar campo "Outros preparos"
+    const outrosCheckbox = document.getElementById('preparo_outros');
+    const outrosContainer = document.getElementById('outrosPreparoContainer');
+    
+    if (outrosCheckbox && outrosContainer) {
+      outrosCheckbox.addEventListener('change', function() {
+        outrosContainer.style.display = this.checked ? 'block' : 'none';
+      });
+    }
+
+    // Mostrar campo "Outros" na unidade de medida
+    const unidadeSelect = document.getElementById('unidade_medida');
+    const outrosUnidadeContainer = document.getElementById('outrosUnidadeContainer');
+    
+    if (unidadeSelect && outrosUnidadeContainer) {
+      unidadeSelect.addEventListener('change', function() {
+        if (this.value === 'Outros') {
+          outrosUnidadeContainer.style.display = 'block';
+        } else {
+          outrosUnidadeContainer.style.display = 'none';
+          document.getElementById('outros_unidade').value = '';
+        }
+      });
+    }
+
+    // Máscara para preço
+    const precoInput = document.getElementById('preco');
+    if (precoInput) {
+      precoInput.addEventListener('blur', function() {
+        if (this.value) {
+          let valor = parseFloat(this.value);
+          if (!isNaN(valor)) {
+            this.value = valor.toFixed(2);
+          }
+        }
+      });
+    }
+
+    // Validação do formulário
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const nome = document.getElementById('nome');
+        const categoria = document.getElementById('categoria');
+        const preco = document.getElementById('preco');
+        const tempo = document.getElementById('tempo_resultado');
+        
+        let isValid = true;
+        let errors = [];
+
+        if (!nome.value.trim()) {
+          isValid = false;
+          nome.classList.add('is-invalid');
+          errors.push('Nome do exame é obrigatório');
+        } else {
+          nome.classList.remove('is-invalid');
+        }
+
+        if (!categoria.value) {
+          isValid = false;
+          categoria.classList.add('is-invalid');
+          errors.push('Categoria é obrigatória');
+        } else {
+          categoria.classList.remove('is-invalid');
+        }
+
+        if (!preco.value || parseFloat(preco.value) <= 0) {
+          isValid = false;
+          preco.classList.add('is-invalid');
+          errors.push('Preço deve ser maior que 0');
+        } else {
+          preco.classList.remove('is-invalid');
+        }
+
+        if (!tempo.value.trim()) {
+          isValid = false;
+          tempo.classList.add('is-invalid');
+          errors.push('Prazo de entrega é obrigatório');
+        } else {
+          tempo.classList.remove('is-invalid');
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+          alert('Por favor, corrija os seguintes erros:\n\n' + errors.join('\n'));
+        }
+      });
+    }
+
+    // Remover erro ao digitar
+    document.querySelectorAll('.form-control, .form-select').forEach(function(input) {
+      input.addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+      });
+    });
+  });
+
+  // ============================================
+  // FUNÇÃO GERAR CÓDIGO
+  // ============================================
+  function gerarCodigo() {
+    const categoriaSelect = document.getElementById('categoria');
+    const categoria = categoriaSelect.value;
+    const nome = document.getElementById('nome').value.trim();
+    const codigoInput = document.getElementById('codigo');
+
+    const prefixos = {
+      'Hematologia': 'HEM',
+      'Bioquímica': 'BIO',
+      'Microbiologia': 'MIC',
+      'Imunologia': 'IMU',
+      'Urinálise': 'URN',
+      'Endocrinologia': 'END',
+      'Genética': 'GEN',
+      'Outros': 'OUT'
+    };
+
+    let prefixo = prefixos[categoria] || 'EXM';
+
+    if (!categoria) {
+      if (nome) {
+        const nomeParts = nome.split(' ');
+        if (nomeParts.length >= 2) {
+          prefixo = (nomeParts[0].substring(0, 2) + nomeParts[1].substring(0, 1)).toUpperCase();
+        } else {
+          prefixo = nome.substring(0, 3).toUpperCase();
+        }
+        if (prefixo.length < 3) {
+          prefixo = prefixo.padEnd(3, 'X');
+        }
+      } else {
+        alert('Selecione uma categoria ou digite o nome do exame primeiro!');
+        return;
+      }
+    }
+
+    // Simula um número incremental (na prática, você buscaria do banco)
+    const ultimoNumero = Math.floor(Math.random() * 999) + 1;
+    const numeroFormatado = String(ultimoNumero).padStart(3, '0');
+    const codigo = `${prefixo}-${numeroFormatado}`;
+
+    codigoInput.value = codigo;
+    codigoInput.classList.remove('is-invalid');
+    codigoInput.focus();
+
+    // Feedback visual
+    const btn = document.querySelector('.input-group .btn-outline-primary');
+    if (btn) {
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<i class="bi bi-check"></i>';
+      btn.classList.remove('btn-outline-primary');
+      btn.classList.add('btn-success');
+      setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-outline-primary');
+      }, 1500);
+    }
+  }
+
+  // ============================================
+  // FUNÇÃO ATUALIZAR PLACEHOLDER VALOR REFERÊNCIA
+  // ============================================
+  function atualizarPlaceholderValorReferencia() {
+    const unidade = document.getElementById('unidade_medida').value;
+    const valorRefInput = document.getElementById('valor_referencia');
+    const helpText = document.getElementById('valor_referencia_help');
+    
+    const exemplos = {
+      'mg/dL': 'Ex: 70-100 mg/dL (glicemia)',
+      'ng/mL': 'Ex: 30-100 ng/mL (vitamina D)',
+      'mmol/L': 'Ex: 3.5-5.0 mmol/L (potássio)',
+      'mUI/L': 'Ex: 0.4-4.0 mUI/L (TSH)',
+      'pg/mL': 'Ex: 200-900 pg/mL (vitamina B12)',
+      'µg/dL': 'Ex: 50-150 µg/dL (ferro)',
+      'UFC/mL': 'Ex: < 100.000 UFC/mL (urina)',
+      'UI/L': 'Ex: 10-40 UI/L (enzimas)',
+      'g/dL': 'Ex: 12-16 g/dL (hemoglobina)',
+      '%': 'Ex: 40-50% (hematócrito)',
+      'pH': 'Ex: 7.35-7.45 (pH sanguíneo)'
+    };
+
+    if (unidade && exemplos[unidade]) {
+      valorRefInput.placeholder = exemplos[unidade];
+      helpText.textContent = `Exemplo para ${unidade}`;
+    } else if (unidade === 'Outros') {
+      valorRefInput.placeholder = 'Ex: valor de referência (especifique a unidade acima)';
+      helpText.textContent = 'Defina o valor de referência com a unidade informada';
+    } else {
+      valorRefInput.placeholder = 'Ex: 70-100 mg/dL';
+      helpText.textContent = 'Valores normais para referência';
+    }
+  }
+</script>
+
+<style>
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--admin-text);
+  }
+  .section-title i {
+    font-size: 1.1rem;
+  }
+  .form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .form-text {
+    font-size: 0.8rem;
+    color: var(--admin-muted);
+    margin-top: 0.25rem;
+  }
+  .form-check-label {
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .form-check-input:checked {
+    background-color: var(--admin-primary);
+    border-color: var(--admin-primary);
+  }
+  .is-invalid {
+    border-color: var(--admin-danger) !important;
+  }
+  .is-invalid:focus {
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12) !important;
+  }
+  .panel {
+    background: var(--admin-surface);
+    border-radius: 12px;
+    padding: 1.75rem;
+    border: 1px solid var(--admin-border);
+    box-shadow: var(--admin-shadow-sm);
+  }
+  html[data-theme="dark"] .panel {
+    background: var(--admin-surface);
+  }
+  @media (max-width: 767.98px) {
+    .panel {
+      padding: 1.25rem;
+    }
+  }
+  @media (max-width: 575.98px) {
+    .panel {
+      padding: 1rem;
+    }
+  }
+</style>
+{% endblock %}
