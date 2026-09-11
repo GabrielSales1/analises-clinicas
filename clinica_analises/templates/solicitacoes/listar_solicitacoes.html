@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitações - Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-file-earmark-medical"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Solicitações de Exames</h1>
+      <p class="text-muted small">Gerencie todas as solicitações do laboratório</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('solicitacao_nova') }}" class="btn btn-primary">
+      <i class="bi bi-plus-circle me-1"></i> Nova Solicitação
+    </a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Filtros -->
+<div class="panel mb-3">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label fw-bold small">Buscar</label>
+      <input type="text" id="buscaInput" class="form-control" placeholder="Paciente ou ID..." 
+             oninput="filtrarSolicitacoes()">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-bold small">Status</label>
+      <select id="statusSelect" class="form-select" onchange="filtrarSolicitacoes()">
+        <option value="">Todos</option>
+        <option value="pendente">⏳ Pendente</option>
+        <option value="coletado">🩸 Coletado</option>
+        <option value="analisando">🔬 Analisando</option>
+        <option value="concluido">✅ Concluído</option>
+        <option value="cancelado">❌ Cancelado</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-bold small">Prioridade</label>
+      <select id="prioridadeSelect" class="form-select" onchange="filtrarSolicitacoes()">
+        <option value="">Todas</option>
+        <option value="baixa">Baixa</option>
+        <option value="normal">Normal</option>
+        <option value="urgente">Urgente</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-secondary w-100" onclick="limparFiltros()">
+        <i class="bi bi-arrow-counterclockwise me-1"></i> Limpar
+      </button>
+    </div>
+  </div>
+  <div class="mt-2 small">
+    <span id="contador" class="text-muted">Mostrando 0 solicitações</span>
+  </div>
+</div>
+
+<!-- Estatísticas -->
+<div class="row g-2 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card bg-primary-subtle border-primary border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-primary-emphasis">{{ solicitacoes|length }}</span>
+        <span class="text-muted small d-block">Total</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-warning-subtle border-warning border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-warning-emphasis">
+          {{ solicitacoes|selectattr('status', 'equalto', 'pendente')|list|length }}
+        </span>
+        <span class="text-muted small d-block">Pendentes</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-info-subtle border-info border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-info-emphasis">
+          {{ solicitacoes|selectattr('status', 'equalto', 'coletado')|list|length }}
+        </span>
+        <span class="text-muted small d-block">Coletados</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-success-subtle border-success border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-success-emphasis">
+          {{ solicitacoes|selectattr('status', 'equalto', 'concluido')|list|length }}
+        </span>
+        <span class="text-muted small d-block">Concluídos</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabela -->
+<div class="panel">
+  {% if solicitacoes %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle" id="tabelaSolicitacoes">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Paciente</th>
+          <th class="d-none d-md-table-cell">Agendado</th>
+          <th class="d-none d-lg-table-cell">Prioridade</th>
+          <th class="d-none d-lg-table-cell">Valor</th>
+          <th>Status</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="corpoTabela">
+        {% for s in solicitacoes %}
+        <tr data-paciente="{{ s.paciente.usuario.nome|lower if s.paciente and s.paciente.usuario else '' }}"
+            data-id="{{ s.id }}"
+            data-status="{{ s.status }}"
+            data-prioridade="{{ s.prioridade }}">
+          <td><span class="fw-bold text-muted">#{{ s.id }}</span></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary-subtle text-primary-emphasis p-2">
+                <i class="bi bi-person"></i>
+              </span>
+              <div>
+                <strong>{{ s.paciente.usuario.nome if s.paciente and s.paciente.usuario else 'N/A' }}</strong>
+                <div class="text-muted small d-md-none">
+                  {% if s.data_agendada %}
+                    {{ s.data_agendada.strftime('%d/%m/%Y') }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="d-none d-md-table-cell">
+            {% if s.data_agendada %}
+              <div class="text-muted small">
+                <i class="bi bi-calendar3 me-1"></i>{{ s.data_agendada.strftime('%d/%m/%Y') }}
+              </div>
+              {% if s.hora_agendada %}
+              <div class="text-muted small">
+                <i class="bi bi-clock me-1"></i>{{ s.hora_agendada.strftime('%H:%M') }}
+              </div>
+              {% endif %}
+            {% else %}
+              <span class="text-muted small">Não agendado</span>
+            {% endif %}
+          </td>
+          <td class="d-none d-lg-table-cell">
+            {% if s.prioridade == 'urgente' %}
+              <span class="badge bg-danger-subtle text-danger-emphasis">
+                <i class="bi bi-exclamation-triangle me-1"></i>Urgente
+              </span>
+            {% elif s.prioridade == 'normal' %}
+              <span class="badge bg-warning-subtle text-warning-emphasis">
+                <i class="bi bi-dash-circle me-1"></i>Normal
+              </span>
+            {% else %}
+              <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                <i class="bi bi-arrow-down me-1"></i>Baixa
+              </span>
+            {% endif %}
+          </td>
+          <td class="d-none d-lg-table-cell">
+            <strong>R$ {{ "%.2f"|format(s.valor_total) if s.valor_total else '0,00' }}</strong>
+          </td>
+          <td>
+            {% if s.status == 'pendente' %}
+              <span class="badge bg-warning-subtle text-warning-emphasis">
+                <i class="bi bi-clock me-1"></i>Pendente
+              </span>
+            {% elif s.status == 'coletado' %}
+              <span class="badge bg-info-subtle text-info-emphasis">
+                <i class="bi bi-droplet me-1"></i>Coletado
+              </span>
+            {% elif s.status == 'analisando' %}
+              <span class="badge bg-primary-subtle text-primary-emphasis">
+                <i class="bi bi-search me-1"></i>Analisando
+              </span>
+            {% elif s.status == 'concluido' %}
+              <span class="badge bg-success-subtle text-success-emphasis">
+                <i class="bi bi-check-circle me-1"></i>Concluído
+              </span>
+            {% elif s.status == 'cancelado' %}
+              <span class="badge bg-danger-subtle text-danger-emphasis">
+                <i class="bi bi-x-circle me-1"></i>Cancelado
+              </span>
+            {% endif %}
+          </td>
+          <td class="text-end">
+            <div class="btn-group btn-group-sm" role="group">
+              <a href="{{ url_for('solicitacao_situacao', id=s.id) }}" class="btn btn-outline-info" title="Ver situação">
+                <i class="bi bi-eye"></i>
+              </a>
+              {% if s.status == 'pendente' %}
+              <a href="{{ url_for('solicitacao_cancelar', id=s.id) }}" class="btn btn-outline-danger" title="Cancelar"
+                 onclick="return confirm('Tem certeza que deseja cancelar a solicitação #{{ s.id }}?')">
+                <i class="bi bi-x-circle"></i>
+              </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <div class="mb-3">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+    </div>
+    <h4 class="mb-2">Nenhuma solicitação cadastrada</h4>
+    <p class="text-muted">Clique em <strong>"Nova Solicitação"</strong> para começar.</p>
+    <a href="{{ url_for('solicitacao_nova') }}" class="btn btn-primary mt-2">
+      <i class="bi bi-plus-circle me-1"></i> Criar Primeira Solicitação
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+function filtrarSolicitacoes() {
+  const busca = document.getElementById('buscaInput').value.toLowerCase().trim();
+  const status = document.getElementById('statusSelect').value;
+  const prioridade = document.getElementById('prioridadeSelect').value;
+  
+  const linhas = document.querySelectorAll('#corpoTabela tr');
+  let visiveis = 0;
+  
+  linhas.forEach(function(linha) {
+    const paciente = linha.dataset.paciente || '';
+    const id = linha.dataset.id || '';
+    const st = linha.dataset.status || '';
+    const pri = linha.dataset.prioridade || '';
+    
+    let mostrar = true;
+    
+    if (busca && !paciente.includes(busca) && !id.includes(busca)) mostrar = false;
+    if (status && st !== status) mostrar = false;
+    if (prioridade && pri !== prioridade) mostrar = false;
+    
+    linha.style.display = mostrar ? '' : 'none';
+    if (mostrar) visiveis++;
+  });
+  
+  document.getElementById('contador').textContent = 
+    `Mostrando ${visiveis} solicitaç${visiveis !== 1 ? 'ões' : 'ão'}`;
+}
+
+function limparFiltros() {
+  document.getElementById('buscaInput').value = '';
+  document.getElementById('statusSelect').value = '';
+  document.getElementById('prioridadeSelect').value = '';
+  filtrarSolicitacoes();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  filtrarSolicitacoes();
+});
+</script>
+
+<style>
+  .panel {
+    background: var(--admin-surface);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid var(--admin-border);
+    box-shadow: var(--admin-shadow-sm);
+  }
+  html[data-theme="dark"] .panel {
+    background: var(--admin-surface);
+  }
+  .border-opacity-25 {
+    --bs-border-opacity: 0.25;
+  }
+  @media (max-width: 767.98px) {
+    .panel { padding: 1rem; }
+    .page-heading { flex-direction: column; align-items: flex-start; }
+    .heading-actions { width: 100%; }
+    .heading-actions .btn { width: 100%; }
+  }
+</style>
+{% endblock %}
