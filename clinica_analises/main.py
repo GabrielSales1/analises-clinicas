@@ -71,7 +71,7 @@ def dashboard():
     return render_template('index.html',user=flask_login.current_user)
 
 
-from controllers.adminstradorController import *
+from controllers.Exames_controller import *
 
 
 if __name__ == '__main__' : 
