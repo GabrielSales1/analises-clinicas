@@ -72,6 +72,8 @@ def dashboard():
 
 
 from controllers.Exames_controller import *
+from controllers.Solicitacoes_controller import *
+
 
 
 if __name__ == '__main__' : 
