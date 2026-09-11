@@ -1,6 +1,8 @@
 from db import db
 
 class Funcionario(db.Model):
+    __tablename__ = 'funcionarios'
+    
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), unique=True)
     cargo = db.Column(db.String(50))

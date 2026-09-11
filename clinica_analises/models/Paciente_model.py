@@ -1,6 +1,9 @@
 from db import db
 
 class Paciente(db.Model):
+
+    __tablename__ = 'pacientes'
+    
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), unique=True)
     data_nascimento = db.Column(db.String(20))
