@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Pacientes - Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-person-hearts"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Pacientes</h1>
+      <p class="text-muted small">Gerencie todos os pacientes do laboratório</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('paciente_novo') }}" class="btn btn-primary">
+      <i class="bi bi-person-plus me-1"></i> Novo Paciente
+    </a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Filtros -->
+<div class="panel mb-3">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label fw-bold small">Buscar</label>
+      <input type="text" id="buscaInput" class="form-control" placeholder="Nome, email ou CPF..." 
+             oninput="filtrarPacientes()">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-bold small">Convênio</label>
+      <select id="convenioSelect" class="form-select" onchange="filtrarPacientes()">
+        <option value="">Todos</option>
+        <option value="Unimed">Unimed</option>
+        <option value="Bradesco Saúde">Bradesco Saúde</option>
+        <option value="SulAmérica">SulAmérica</option>
+        <option value="Amil">Amil</option>
+        <option value="Particular">Particular</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-secondary w-100" onclick="limparFiltros()">
+        <i class="bi bi-arrow-counterclockwise me-1"></i> Limpar
+      </button>
+    </div>
+  </div>
+  <div class="mt-2 small">
+    <span id="contador" class="text-muted">Mostrando 0 pacientes</span>
+  </div>
+</div>
+
+<!-- Estatísticas -->
+<div class="row g-2 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card bg-primary-subtle border-primary border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-primary-emphasis">{{ pacientes|length }}</span>
+        <span class="text-muted small d-block">Total</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-success-subtle border-success border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-success-emphasis">
+          {{ pacientes|selectattr('convenio', 'equalto', 'Unimed')|list|length }}
+        </span>
+        <span class="text-muted small d-block">Unimed</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-info-subtle border-info border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-info-emphasis">
+          {{ pacientes|selectattr('convenio', 'equalto', 'Particular')|list|length }}
+        </span>
+        <span class="text-muted small d-block">Particular</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-purple-subtle border-purple border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-purple-emphasis">
+          {{ pacientes|selectattr('convenio', 'equalto', 'Amil')|list|length }}
+        </span>
+        <span class="text-muted small d-block">Amil</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabela -->
+<div class="panel">
+  {% if pacientes %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle" id="tabelaPacientes">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th class="d-none d-md-table-cell">CPF</th>
+          <th class="d-none d-lg-table-cell">Convênio</th>
+          <th class="d-none d-lg-table-cell">Nascimento</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="corpoTabela">
+        {% for p in pacientes %}
+        <tr data-nome="{{ p.usuario.nome|lower if p.usuario else '' }}"
+            data-email="{{ p.usuario.email|lower if p.usuario else '' }}"
+            data-cpf="{{ p.cpf|lower if p.cpf else '' }}"
+            data-convenio="{{ p.convenio or '' }}"
+            data-id="{{ p.id }}">
+          <td><span class="fw-bold text-muted">#{{ p.id }}</span></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-success-subtle text-success-emphasis p-2">
+                <i class="bi bi-person-hearts"></i>
+              </span>
+              <div>
+                <strong>{{ p.usuario.nome if p.usuario else 'N/A' }}</strong>
+                <div class="text-muted small d-md-none">{{ p.usuario.email if p.usuario else '' }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="d-none d-md-table-cell">
+            <code>{{ p.cpf or '-' }}</code>
+          </td>
+          <td class="d-none d-lg-table-cell">
+            {% if p.convenio %}
+              <span class="badge bg-info-subtle text-info-emphasis">
+                <i class="bi bi-shield-check me-1"></i>{{ p.convenio }}
+              </span>
+            {% else %}
+              <span class="text-muted small">Não informado</span>
+            {% endif %}
+          </td>
+          <td class="d-none d-lg-table-cell">
+            <span class="text-muted small">
+              <i class="bi bi-calendar3 me-1"></i>{{ p.data_nascimento or '-' }}
+            </span>
+          </td>
+          <td class="text-end">
+            <div class="btn-group btn-group-sm" role="group">
+              <a href="{{ url_for('paciente_editar', id=p.id) }}" class="btn btn-outline-primary" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{{ url_for('paciente_excluir', id=p.id) }}" class="btn btn-outline-danger" title="Excluir"
+                 onclick="return confirm('Tem certeza que deseja excluir o paciente {{ p.usuario.nome if p.usuario else }}?')">
+                <i class="bi bi-trash"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <div class="mb-3">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+    </div>
+    <h4 class="mb-2">Nenhum paciente cadastrado</h4>
+    <p class="text-muted">Clique em <strong>"Novo Paciente"</strong> para começar.</p>
+    <a href="{{ url_for('paciente_novo') }}" class="btn btn-primary mt-2">
+      <i class="bi bi-person-plus me-1"></i> Criar Primeiro Paciente
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+function filtrarPacientes() {
+  const busca = document.getElementById('buscaInput').value.toLowerCase().trim();
+  const convenio = document.getElementById('convenioSelect').value;
+
+  const linhas = document.querySelectorAll('#corpoTabela tr');
+  let visiveis = 0;
+
+  linhas.forEach(function(linha) {
+    const nome = linha.dataset.nome || '';
+    const email = linha.dataset.email || '';
+    const cpf = linha.dataset.cpf || '';
+    const id = linha.dataset.id || '';
+    const conv = linha.dataset.convenio || '';
+
+    let mostrar = true;
+
+    if (busca && !nome.includes(busca) && !email.includes(busca) && !cpf.includes(busca) && !id.includes(busca)) {
+      mostrar = false;
+    }
+    if (convenio && conv !== convenio) {
+      mostrar = false;
+    }
+
+    linha.style.display = mostrar ? '' : 'none';
+    if (mostrar) visiveis++;
+  });
+
+  document.getElementById('contador').textContent =
+    `Mostrando ${visiveis} paciente${visiveis !== 1 ? 's' : ''}`;
+}
+
+function limparFiltros() {
+  document.getElementById('buscaInput').value = '';
+  document.getElementById('convenioSelect').value = '';
+  filtrarPacientes();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  filtrarPacientes();
+});
+</script>
+{% endblock %}

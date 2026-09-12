@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Usuários - Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-people"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Usuários</h1>
+      <p class="text-muted small">Gerencie todos os usuários do sistema</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('usuario_novo') }}" class="btn btn-primary">
+      <i class="bi bi-person-plus me-1"></i> Novo Usuário
+    </a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Filtros -->
+<div class="panel mb-3">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label fw-bold small">Buscar</label>
+      <input type="text" id="buscaInput" class="form-control" placeholder="Nome ou email..." 
+             oninput="filtrarUsuarios()">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label fw-bold small">Tipo</label>
+      <select id="tipoSelect" class="form-select" onchange="filtrarUsuarios()">
+        <option value="">Todos</option>
+        <option value="admin">Admin</option>
+        <option value="funcionario">Funcionário</option>
+        <option value="paciente">Paciente</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-secondary w-100" onclick="limparFiltros()">
+        <i class="bi bi-arrow-counterclockwise me-1"></i> Limpar
+      </button>
+    </div>
+  </div>
+  <div class="mt-2 small">
+    <span id="contador" class="text-muted">Mostrando 0 usuários</span>
+  </div>
+</div>
+
+<!-- Estatísticas -->
+<div class="row g-2 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="card bg-primary-subtle border-primary border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-primary-emphasis">{{ usuarios|length }}</span>
+        <span class="text-muted small d-block">Total</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-info-subtle border-info border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-info-emphasis">
+          {{ usuarios|selectattr('tipo', 'equalto', 'funcionario')|list|length }}
+        </span>
+        <span class="text-muted small d-block">Funcionários</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-success-subtle border-success border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-success-emphasis">
+          {{ usuarios|selectattr('tipo', 'equalto', 'paciente')|list|length }}
+        </span>
+        <span class="text-muted small d-block">Pacientes</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card bg-purple-subtle border-purple border-opacity-25">
+      <div class="card-body text-center py-2">
+        <span class="fw-bold text-purple-emphasis">
+          {{ usuarios|selectattr('tipo', 'equalto', 'admin')|list|length }}
+        </span>
+        <span class="text-muted small d-block">Admins</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabela -->
+<div class="panel">
+  {% if usuarios %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle" id="tabelaUsuarios">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th class="d-none d-md-table-cell">Email</th>
+          <th>Tipo</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="corpoTabela">
+        {% for u in usuarios %}
+        <tr data-nome="{{ u.nome|lower }}"
+            data-email="{{ u.email|lower }}"
+            data-id="{{ u.id }}"
+            data-tipo="{{ u.tipo }}">
+          <td><span class="fw-bold text-muted">#{{ u.id }}</span></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary-subtle text-primary-emphasis p-2">
+                <i class="bi bi-person"></i>
+              </span>
+              <div>
+                <strong>{{ u.nome }}</strong>
+                <div class="text-muted small d-md-none">{{ u.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="d-none d-md-table-cell">
+            <span class="text-muted small">
+              <i class="bi bi-envelope me-1"></i>{{ u.email }}
+            </span>
+          </td>
+          <td>
+            {% if u.tipo == 'admin' %}
+              <span class="badge bg-purple-subtle text-purple-emphasis">
+                <i class="bi bi-shield-lock me-1"></i>Admin
+              </span>
+            {% elif u.tipo == 'funcionario' %}
+              <span class="badge bg-info-subtle text-info-emphasis">
+                <i class="bi bi-person-badge me-1"></i>Funcionário
+              </span>
+            {% elif u.tipo == 'paciente' %}
+              <span class="badge bg-success-subtle text-success-emphasis">
+                <i class="bi bi-person-hearts me-1"></i>Paciente
+              </span>
+            {% else %}
+              <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                {{ u.tipo|capitalize }}
+              </span>
+            {% endif %}
+          </td>
+          <td class="text-end">
+            <div class="btn-group btn-group-sm" role="group">
+              <a href="{{ url_for('usuario_editar', id=u.id) }}" class="btn btn-outline-primary" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{{ url_for('usuario_excluir', id=u.id) }}" class="btn btn-outline-danger" title="Excluir"
+                 onclick="return confirm('Tem certeza que deseja excluir o usuário {{ u.nome }}?')">
+                <i class="bi bi-trash"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <div class="mb-3">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+    </div>
+    <h4 class="mb-2">Nenhum usuário cadastrado</h4>
+    <p class="text-muted">Clique em <strong>"Novo Usuário"</strong> para começar.</p>
+    <a href="{{ url_for('usuario_novo') }}" class="btn btn-primary mt-2">
+      <i class="bi bi-person-plus me-1"></i> Criar Primeiro Usuário
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+function filtrarUsuarios() {
+  const busca = document.getElementById('buscaInput').value.toLowerCase().trim();
+  const tipo = document.getElementById('tipoSelect').value;
+
+  const linhas = document.querySelectorAll('#corpoTabela tr');
+  let visiveis = 0;
+
+  linhas.forEach(function(linha) {
+    const nome = linha.dataset.nome || '';
+    const email = linha.dataset.email || '';
+    const id = linha.dataset.id || '';
+    const tp = linha.dataset.tipo || '';
+
+    let mostrar = true;
+
+    if (busca && !nome.includes(busca) && !email.includes(busca) && !id.includes(busca)) {
+      mostrar = false;
+    }
+    if (tipo && tp !== tipo) {
+      mostrar = false;
+    }
+
+    linha.style.display = mostrar ? '' : 'none';
+    if (mostrar) visiveis++;
+  });
+
+  document.getElementById('contador').textContent =
+    `Mostrando ${visiveis} usuário${visiveis !== 1 ? 's' : ''}`;
+}
+
+function limparFiltros() {
+  document.getElementById('buscaInput').value = '';
+  document.getElementById('tipoSelect').value = '';
+  filtrarUsuarios();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  filtrarUsuarios();
+});
+</script>
+{% endblock %}
