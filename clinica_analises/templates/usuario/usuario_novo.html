@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Usuário | Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-person-plus"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Novo Usuário</h1>
+      <p class="text-muted small">Cadastre um novo usuário no sistema</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('usuario_listar') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Voltar
+    </a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="panel">
+  <form method="POST" action="{{ url_for('usuario_novo') }}">
+
+    <!-- ============================================ -->
+    <!-- DADOS BÁSICOS -->
+    <!-- ============================================ -->
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-person text-primary"></i> Dados do Usuário
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="nome" class="form-label fw-bold">
+            Nome completo <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="nome" name="nome"
+                 placeholder="Digite o nome completo" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="email" class="form-label fw-bold">
+            E-mail <span class="text-danger">*</span>
+          </label>
+          <input type="email" class="form-control" id="email" name="email"
+                 placeholder="exemplo@email.com" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="senha" class="form-label fw-bold">
+            Senha <span class="text-danger">*</span>
+          </label>
+          <input type="password" class="form-control" id="senha" name="senha"
+                 placeholder="Digite a senha" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="confirmar_senha" class="form-label fw-bold">
+            Confirmar senha <span class="text-danger">*</span>
+          </label>
+          <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha"
+                 placeholder="Confirme a senha" required>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ============================================ -->
+    <!-- TIPO DE USUÁRIO (ESCOLHA NO FINAL) -->
+    <!-- ============================================ -->
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-person-badge text-primary"></i> Tipo de Usuário
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="opcao-usuario" onclick="selecionarTipo('funcionario', this)">
+            <div class="opcao-icone">
+              <i class="bi bi-person-badge"></i>
+            </div>
+            <h6>Funcionário</h6>
+            <p>Cadastrar funcionário do laboratório</p>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="opcao-usuario" onclick="selecionarTipo('paciente', this)">
+            <div class="opcao-icone">
+              <i class="bi bi-person-hearts"></i>
+            </div>
+            <h6>Paciente</h6>
+            <p>Cadastrar paciente do laboratório</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campo hidden que guarda o tipo escolhido -->
+      <input type="hidden" id="tipo" name="tipo" value="">
+    </div>
+
+    <hr>
+
+    <!-- ============================================ -->
+    <!-- BOTÕES -->
+    <!-- ============================================ -->
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+      <a href="{{ url_for('usuario_listar') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-x-circle me-1"></i> Cancelar
+      </a>
+      <button type="submit" class="btn btn-primary" id="btn-cadastrar" disabled>
+        <i class="bi bi-check2-circle me-1"></i> Cadastrar Usuário
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  function selecionarTipo(tipo, elemento) {
+    // Remove seleção das outras opções
+    document.querySelectorAll('.opcao-usuario').forEach(function(opcao) {
+      opcao.classList.remove('selecionada');
+    });
+
+    // Marca a opção clicada
+    elemento.classList.add('selecionada');
+
+    // Define o valor no campo hidden
+    document.getElementById('tipo').value = tipo;
+
+    // Habilita o botão de cadastrar
+    document.getElementById('btn-cadastrar').disabled = false;
+  }
+
+  // Validação antes de enviar
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const tipo = document.getElementById('tipo').value;
+
+    if (!tipo) {
+      e.preventDefault();
+      alert('Por favor, selecione um tipo de usuário antes de cadastrar.');
+      return false;
+    }
+
+    const senha = document.getElementById('senha').value;
+    const confirmar = document.getElementById('confirmar_senha').value;
+
+    if (senha !== confirmar) {
+      e.preventDefault();
+      alert('As senhas não coincidem.');
+      return false;
+    }
+  });
+</script>
+
+<style>
+  .opcao-usuario {
+    border: 2px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 25px 20px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--admin-surface);
+    transition: all 0.25s ease;
+  }
+
+  .opcao-usuario:hover {
+    border-color: var(--admin-primary);
+    background: var(--admin-surface-soft);
+    transform: translateY(-2px);
+  }
+
+  .opcao-usuario.selecionada {
+    border-color: var(--admin-primary);
+    background: #eaf3ff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  }
+
+  .opcao-icone {
+    width: 55px;
+    height: 55px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--admin-surface-soft);
+    color: var(--admin-primary);
+    font-size: 26px;
+  }
+
+  .opcao-usuario.selecionada .opcao-icone {
+    background: var(--admin-primary);
+    color: white;
+  }
+
+  .opcao-usuario h6 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--admin-text);
+    margin-bottom: 5px;
+  }
+
+  .opcao-usuario p {
+    font-size: 0.9rem;
+    color: var(--admin-muted);
+    margin: 0;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--admin-text);
+  }
+
+  .section-title i {
+    font-size: 1.1rem;
+  }
+
+  html[data-theme="dark"] .opcao-usuario.selecionada {
+    background: #1e3a5f;
+  }
+
+  @media (max-width: 767.98px) {
+    .opcao-usuario {
+      padding: 20px 15px;
+    }
+  }
+</style>
+
+{% endblock %}
