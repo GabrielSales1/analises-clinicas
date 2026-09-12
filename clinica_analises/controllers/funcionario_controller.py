@@ -13,3 +13,8 @@ from models.Funcionario_model import Funcionario
 def funcionario_listar() : 
     funcionarios = Funcionario.query.all()
     return render_template('paciente/lista_pacientes.html',user=flask_login.current_user,funcionarios = funcionarios)
+
+@app.route('/funcionario/novo')
+@flask_login.login_required
+def funcionario_novo():
+    return "<p>Em breve - Funcionário</p>"

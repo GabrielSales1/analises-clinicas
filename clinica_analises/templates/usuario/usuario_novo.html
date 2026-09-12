@@ -31,11 +31,34 @@
 {% endwith %}
 
 <div class="panel">
-  <form method="POST" action="{{ url_for('usuario_novo') }}">
+  <form method="POST" action="{{ url_for('usuario_novo') }}" enctype="multipart/form-data">
 
-    <!-- ============================================ -->
+    <!-- FOTO -->
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-camera text-primary"></i> Foto de Perfil
+      </h5>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-md-3 text-center">
+          <img id="previewFoto"
+               src="{{ url_for('static', filename='img/imgs/avatar.jpg') }}"
+               alt="Preview"
+               style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--admin-border);">
+        </div>
+
+        <div class="col-md-9">
+          <label for="foto" class="form-label fw-bold">Escolha uma foto</label>
+          <input type="file" class="form-control" id="foto" name="foto"
+                 accept="image/*" onchange="previewImagem(event)">
+          <div class="form-text">Formatos aceitos: PNG, JPG, JPEG, WEBP (máx. 2MB)</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
     <!-- DADOS BÁSICOS -->
-    <!-- ============================================ -->
     <div class="mb-4">
       <h5 class="section-title mb-3">
         <i class="bi bi-person text-primary"></i> Dados do Usuário
@@ -78,9 +101,7 @@
 
     <hr>
 
-    <!-- ============================================ -->
-    <!-- TIPO DE USUÁRIO (ESCOLHA NO FINAL) -->
-    <!-- ============================================ -->
+    <!-- TIPO DE USUÁRIO -->
     <div class="mb-4">
       <h5 class="section-title mb-3">
         <i class="bi bi-person-badge text-primary"></i> Tipo de Usuário
@@ -108,15 +129,12 @@
         </div>
       </div>
 
-      <!-- Campo hidden que guarda o tipo escolhido -->
       <input type="hidden" id="tipo" name="tipo" value="">
     </div>
 
     <hr>
 
-    <!-- ============================================ -->
     <!-- BOTÕES -->
-    <!-- ============================================ -->
     <div class="d-flex flex-wrap gap-2 justify-content-end">
       <a href="{{ url_for('usuario_listar') }}" class="btn btn-outline-secondary">
         <i class="bi bi-x-circle me-1"></i> Cancelar
@@ -130,23 +148,30 @@
 </div>
 
 <script>
+  function previewImagem(event) {
+    const input = event.target;
+    const preview = document.getElementById('previewFoto');
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
   function selecionarTipo(tipo, elemento) {
-    // Remove seleção das outras opções
     document.querySelectorAll('.opcao-usuario').forEach(function(opcao) {
       opcao.classList.remove('selecionada');
     });
 
-    // Marca a opção clicada
     elemento.classList.add('selecionada');
 
-    // Define o valor no campo hidden
     document.getElementById('tipo').value = tipo;
-
-    // Habilita o botão de cadastrar
     document.getElementById('btn-cadastrar').disabled = false;
   }
 
-  // Validação antes de enviar
   document.querySelector('form').addEventListener('submit', function(e) {
     const tipo = document.getElementById('tipo').value;
 
