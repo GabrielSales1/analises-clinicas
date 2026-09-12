@@ -30,12 +30,11 @@
   {% endif %}
 {% endwith %}
 
-<!-- Filtros -->
 <div class="panel mb-3">
   <div class="row g-2 align-items-end">
     <div class="col-md-4">
       <label class="form-label fw-bold small">Buscar</label>
-      <input type="text" id="buscaInput" class="form-control" placeholder="Nome, email ou CPF..." 
+      <input type="text" id="buscaInput" class="form-control" placeholder="Nome, email ou CPF..."
              oninput="filtrarPacientes()">
     </div>
     <div class="col-md-3">
@@ -60,7 +59,6 @@
   </div>
 </div>
 
-<!-- Estatísticas -->
 <div class="row g-2 mb-3">
   <div class="col-6 col-md-3">
     <div class="card bg-primary-subtle border-primary border-opacity-25">
@@ -102,7 +100,6 @@
   </div>
 </div>
 
-<!-- Tabela -->
 <div class="panel">
   {% if pacientes %}
   <div class="table-responsive">
@@ -127,9 +124,9 @@
           <td><span class="fw-bold text-muted">#{{ p.id }}</span></td>
           <td>
             <div class="d-flex align-items-center gap-2">
-              <span class="badge bg-success-subtle text-success-emphasis p-2">
-                <i class="bi bi-person-hearts"></i>
-              </span>
+              <img src="{{ p.usuario.get_foto_url() }}"
+                   alt="{{ p.usuario.nome }}"
+                   style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--admin-border);">
               <div>
                 <strong>{{ p.usuario.nome if p.usuario else 'N/A' }}</strong>
                 <div class="text-muted small d-md-none">{{ p.usuario.email if p.usuario else '' }}</div>
@@ -155,11 +152,14 @@
           </td>
           <td class="text-end">
             <div class="btn-group btn-group-sm" role="group">
+              <a href="{{ url_for('paciente_detalhes', id=p.id) }}" class="btn btn-outline-info" title="Ver detalhes">
+                <i class="bi bi-eye"></i>
+              </a>
               <a href="{{ url_for('paciente_editar', id=p.id) }}" class="btn btn-outline-primary" title="Editar">
                 <i class="bi bi-pencil"></i>
               </a>
               <a href="{{ url_for('paciente_excluir', id=p.id) }}" class="btn btn-outline-danger" title="Excluir"
-                 onclick="return confirm('Tem certeza que deseja excluir o paciente {{ p.usuario.nome if p.usuario else }}?')">
+                 onclick="return confirm('Tem certeza que deseja excluir o paciente?')">
                 <i class="bi bi-trash"></i>
               </a>
             </div>

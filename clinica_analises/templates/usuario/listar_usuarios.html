@@ -30,12 +30,11 @@
   {% endif %}
 {% endwith %}
 
-<!-- Filtros -->
 <div class="panel mb-3">
   <div class="row g-2 align-items-end">
     <div class="col-md-4">
       <label class="form-label fw-bold small">Buscar</label>
-      <input type="text" id="buscaInput" class="form-control" placeholder="Nome ou email..." 
+      <input type="text" id="buscaInput" class="form-control" placeholder="Nome ou email..."
              oninput="filtrarUsuarios()">
     </div>
     <div class="col-md-3">
@@ -58,7 +57,6 @@
   </div>
 </div>
 
-<!-- Estatísticas -->
 <div class="row g-2 mb-3">
   <div class="col-6 col-md-3">
     <div class="card bg-primary-subtle border-primary border-opacity-25">
@@ -100,7 +98,6 @@
   </div>
 </div>
 
-<!-- Tabela -->
 <div class="panel">
   {% if usuarios %}
   <div class="table-responsive">
@@ -158,13 +155,35 @@
           </td>
           <td class="text-end">
             <div class="btn-group btn-group-sm" role="group">
-              <a href="{{ url_for('usuario_editar', id=u.id) }}" class="btn btn-outline-primary" title="Editar">
-                <i class="bi bi-pencil"></i>
-              </a>
-              <a href="{{ url_for('usuario_excluir', id=u.id) }}" class="btn btn-outline-danger" title="Excluir"
-                 onclick="return confirm('Tem certeza que deseja excluir o usuário {{ u.nome }}?')">
-                <i class="bi bi-trash"></i>
-              </a>
+
+              {% if u.tipo == 'paciente' and u.paciente %}
+                <a href="{{ url_for('paciente_detalhes', id=u.paciente.id) }}" class="btn btn-outline-info" title="Ver detalhes">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a href="{{ url_for('paciente_editar', id=u.paciente.id) }}" class="btn btn-outline-primary" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a href="{{ url_for('paciente_excluir', id=u.paciente.id) }}" class="btn btn-outline-danger" title="Excluir"
+                   onclick="return confirm('Tem certeza que deseja excluir o paciente {{ u.nome }}?')">
+                  <i class="bi bi-trash"></i>
+                </a>
+
+              {% elif u.tipo == 'funcionario' and u.funcionario %}
+                <a href="#" class="btn btn-outline-info" title="Ver detalhes">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a href="#" class="btn btn-outline-primary" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a href="#" class="btn btn-outline-danger" title="Excluir"
+                   onclick="return confirm('Tem certeza que deseja excluir o funcionário {{ u.nome }}?')">
+                  <i class="bi bi-trash"></i>
+                </a>
+
+              {% else %}
+                <span class="text-muted small">—</span>
+              {% endif %}
+
             </div>
           </td>
         </tr>
