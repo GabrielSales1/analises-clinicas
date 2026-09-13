@@ -1,1 +1,246 @@
-<p>cu</p>
+{% extends "base.html" %}
+
+{% block title %}Situação da Solicitação | Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-search-heart"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Solicitação #{{ solicitacao.id }}</h1>
+      <p class="text-muted small">Acompanhe a situação dos exames</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('solicitacao_listar') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Voltar
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+
+  <div class="col-lg-8">
+
+    <div class="panel mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-person-hearts text-primary"></i> Dados do Paciente
+      </h5>
+
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <img src="{{ solicitacao.paciente.usuario.get_foto_url() }}"
+             alt="{{ solicitacao.paciente.usuario.nome }}"
+             style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--admin-border);">
+        <div>
+          <h5 class="mb-0">{{ solicitacao.paciente.usuario.nome }}</h5>
+          <small class="text-muted">
+            <i class="bi bi-envelope me-1"></i>{{ solicitacao.paciente.usuario.email }}
+          </small>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="info-item">
+            <span class="text-muted small">CPF</span>
+            <span class="fw-bold"><code>{{ solicitacao.paciente.cpf or '-' }}</code></span>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="info-item">
+            <span class="text-muted small">Convênio</span>
+            <span class="fw-bold">{{ solicitacao.paciente.convenio or 'Não informado' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-clipboard2-pulse text-primary"></i> Exames Solicitados
+      </h5>
+
+      {% if solicitacao.itens %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Exame</th>
+              <th>Categoria</th>
+              <th>Valor</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in solicitacao.itens %}
+            <tr>
+              <td><strong>{{ item.exame.nome }}</strong></td>
+              <td>
+                <span class="badge bg-info-subtle text-info-emphasis">{{ item.exame.categoria }}</span>
+              </td>
+              <td>R$ {{ "%.2f"|format(item.valor) if item.valor else '0,00' }}</td>
+              <td>
+                {% if item.status == 'pendente' %}
+                  <span class="badge bg-warning-subtle text-warning-emphasis">
+                    <i class="bi bi-clock me-1"></i>Pendente
+                  </span>
+                {% elif item.status == 'coletado' %}
+                  <span class="badge bg-info-subtle text-info-emphasis">
+                    <i class="bi bi-droplet me-1"></i>Coletado
+                  </span>
+                {% elif item.status == 'analisando' %}
+                  <span class="badge bg-primary-subtle text-primary-emphasis">
+                    <i class="bi bi-search me-1"></i>Analisando
+                  </span>
+                {% elif item.status == 'concluido' %}
+                  <span class="badge bg-success-subtle text-success-emphasis">
+                    <i class="bi bi-check-circle me-1"></i>Concluído
+                  </span>
+                {% elif item.status == 'cancelado' %}
+                  <span class="badge bg-danger-subtle text-danger-emphasis">
+                    <i class="bi bi-x-circle me-1"></i>Cancelado
+                  </span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted">Nenhum exame nesta solicitação.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <div class="col-lg-4">
+
+    <div class="panel mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-info-circle text-primary"></i> Informações
+      </h5>
+
+      <div class="d-flex justify-content-between py-2 border-bottom">
+        <span class="text-muted">Status geral</span>
+        <span class="fw-bold">
+          {% if solicitacao.status == 'pendente' %}
+            <span class="badge bg-warning-subtle text-warning-emphasis">Pendente</span>
+          {% elif solicitacao.status == 'coletado' %}
+            <span class="badge bg-info-subtle text-info-emphasis">Coletado</span>
+          {% elif solicitacao.status == 'analisando' %}
+            <span class="badge bg-primary-subtle text-primary-emphasis">Analisando</span>
+          {% elif solicitacao.status == 'concluido' %}
+            <span class="badge bg-success-subtle text-success-emphasis">Concluído</span>
+          {% elif solicitacao.status == 'cancelado' %}
+            <span class="badge bg-danger-subtle text-danger-emphasis">Cancelado</span>
+          {% endif %}
+        </span>
+      </div>
+
+      <div class="d-flex justify-content-between py-2 border-bottom">
+        <span class="text-muted">Prioridade</span>
+        <span class="fw-bold">
+          {% if solicitacao.prioridade == 'urgente' %}
+            <span class="badge bg-danger-subtle text-danger-emphasis">Urgente</span>
+          {% elif solicitacao.prioridade == 'normal' %}
+            <span class="badge bg-warning-subtle text-warning-emphasis">Normal</span>
+          {% else %}
+            <span class="badge bg-secondary-subtle text-secondary-emphasis">Baixa</span>
+          {% endif %}
+        </span>
+      </div>
+
+      <div class="d-flex justify-content-between py-2 border-bottom">
+        <span class="text-muted">Data solicitação</span>
+        <span class="fw-bold">
+          {{ solicitacao.data_solicitacao.strftime('%d/%m/%Y %H:%M') if solicitacao.data_solicitacao else '-' }}
+        </span>
+      </div>
+
+      <div class="d-flex justify-content-between py-2 border-bottom">
+        <span class="text-muted">Agendado para</span>
+        <span class="fw-bold">
+          {% if solicitacao.data_agendada %}
+            {{ solicitacao.data_agendada.strftime('%d/%m/%Y') }}
+            {% if solicitacao.hora_agendada %}
+              às {{ solicitacao.hora_agendada.strftime('%H:%M') }}
+            {% endif %}
+          {% else %}
+            -
+          {% endif %}
+        </span>
+      </div>
+
+      <div class="d-flex justify-content-between py-2">
+        <span class="text-muted">Valor total</span>
+        <span class="fw-bold text-success-emphasis">
+          R$ {{ "%.2f"|format(solicitacao.valor_total) if solicitacao.valor_total else '0,00' }}
+        </span>
+      </div>
+    </div>
+
+    {% if solicitacao.observacoes %}
+    <div class="panel mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-chat-left-text text-primary"></i> Observações
+      </h5>
+      <p class="mb-0">{{ solicitacao.observacoes }}</p>
+    </div>
+    {% endif %}
+
+    {% if solicitacao.status == 'pendente' %}
+    <div class="panel">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-gear text-primary"></i> Ações
+      </h5>
+
+      <div class="d-flex flex-column gap-2">
+        <a href="{{ url_for('solicitacao_cancelar', id=solicitacao.id) }}"
+           class="btn btn-outline-danger"
+           onclick="return confirm('Tem certeza que deseja cancelar esta solicitação?')">
+          <i class="bi bi-x-circle me-1"></i> Cancelar Solicitação
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<style>
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--admin-text);
+  }
+  .section-title i {
+    font-size: 1.1rem;
+  }
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: var(--admin-surface-soft);
+    height: 100%;
+  }
+  .info-item span:first-child {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .info-item span:last-child {
+    font-size: 0.95rem;
+  }
+  .border-bottom {
+    border-color: var(--admin-border) !important;
+  }
+</style>
+
+{% endblock %}

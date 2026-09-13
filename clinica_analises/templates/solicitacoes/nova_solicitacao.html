@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Solicitação | Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-file-earmark-medical"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Nova Solicitação</h1>
+      <p class="text-muted small">Crie uma nova solicitação de exames</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('solicitacao_listar') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Voltar
+    </a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="POST" action="{{ url_for('solicitacao_nova') }}">
+  <div class="row g-4">
+
+    <div class="col-lg-8">
+
+      <div class="panel mb-4">
+        <h5 class="section-title mb-3">
+          <i class="bi bi-person-hearts text-primary"></i> Dados da Solicitação
+        </h5>
+
+        <div class="row g-3">
+          <div class="col-md-12">
+            <label for="paciente_id" class="form-label fw-bold">
+              Paciente <span class="text-danger">*</span>
+            </label>
+            <select class="form-select" id="paciente_id" name="paciente_id" required>
+              <option value="">Selecione o paciente...</option>
+              {% for p in pacientes %}
+              <option value="{{ p.id }}">{{ p.usuario.nome }} - {{ p.cpf }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label for="data_agendada" class="form-label fw-bold">Data Agendada</label>
+            <input type="date" class="form-control" id="data_agendada" name="data_agendada">
+          </div>
+
+          <div class="col-md-6">
+            <label for="hora_agendada" class="form-label fw-bold">Hora Agendada</label>
+            <input type="time" class="form-control" id="hora_agendada" name="hora_agendada">
+          </div>
+
+          <div class="col-md-6">
+            <label for="prioridade" class="form-label fw-bold">Prioridade</label>
+            <select class="form-select" id="prioridade" name="prioridade">
+              <option value="baixa">Baixa</option>
+              <option value="normal" selected>Normal</option>
+              <option value="urgente">Urgente</option>
+            </select>
+          </div>
+
+          <div class="col-md-12">
+            <label for="observacoes" class="form-label fw-bold">Observações</label>
+            <input type="text" class="form-control" id="observacoes" name="observacoes" placeholder="Observações (opcional)">
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h5 class="section-title mb-3">
+          <i class="bi bi-clipboard2-pulse text-primary"></i> Exames Disponíveis
+        </h5>
+
+        <!-- FILTROS -->
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-md-5">
+            <label class="form-label fw-bold small">Buscar exame</label>
+            <input type="text" id="buscaExame" class="form-control" placeholder="Nome do exame..." oninput="filtrarExames()">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-bold small">Categoria</label>
+            <select id="categoriaSelect" class="form-select" onchange="filtrarExames()">
+              <option value="">Todas as categorias</option>
+              {% set categorias = exames|map(attribute='categoria')|unique|list %}
+              {% for cat in categorias %}
+                <option value="{{ cat }}">{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-3">
+            <button type="button" class="btn btn-secondary w-100" onclick="limparFiltros()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Limpar
+            </button>
+          </div>
+        </div>
+
+        <div class="small text-muted mb-2">
+          <span id="contadorExames">Mostrando 0 exames</span>
+        </div>
+
+        {% if exames %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle" id="tabelaExames">
+            <thead>
+              <tr>
+                <th style="width: 40px;"></th>
+                <th>Exame</th>
+                <th>Categoria</th>
+                <th>Preço</th>
+              </tr>
+            </thead>
+            <tbody id="corpoExames">
+              {% for e in exames %}
+              <tr data-nome="{{ e.nome|lower }}"
+                  data-categoria="{{ e.categoria }}">
+                <td>
+                  <input class="form-check-input exame-checkbox" type="checkbox"
+                         name="exames_ids" value="{{ e.id }}"
+                         data-preco="{{ e.preco or 0 }}"
+                         id="exame_{{ e.id }}"
+                         onchange="calcularTotal()">
+                </td>
+                <td><label for="exame_{{ e.id }}" style="cursor:pointer;">{{ e.nome }}</label></td>
+                <td>
+                  <span class="badge bg-info-subtle text-info-emphasis">{{ e.categoria }}</span>
+                </td>
+                <td><strong>R$ {{ "%.2f"|format(e.preco) if e.preco else '0,00' }}</strong></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div id="semResultados" class="text-center py-4" style="display:none;">
+          <i class="bi bi-search display-4 text-muted"></i>
+          <p class="text-muted mt-2">Nenhum exame encontrado com os filtros aplicados.</p>
+        </div>
+        {% else %}
+        <p class="text-muted">Nenhum exame cadastrado.</p>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <div class="col-lg-4">
+      <div class="panel">
+        <h5 class="section-title mb-3">
+          <i class="bi bi-calculator text-primary"></i> Resumo
+        </h5>
+
+        <div class="d-flex justify-content-between py-2 border-bottom">
+          <span class="text-muted">Exames selecionados</span>
+          <span class="fw-bold" id="qtdExames">0</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2 border-bottom">
+          <span class="text-muted">Valor total</span>
+          <span class="fw-bold text-success-emphasis" id="total">R$ 0,00</span>
+        </div>
+
+        <div class="mt-3 d-flex flex-column gap-2">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-check2-circle me-1"></i> Criar Solicitação
+          </button>
+          <a href="{{ url_for('solicitacao_listar') }}" class="btn btn-outline-secondary w-100">
+            <i class="bi bi-x-circle me-1"></i> Cancelar
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>
+
+<script>
+  function calcularTotal() {
+    const checkboxes = document.querySelectorAll('.exame-checkbox:checked');
+    let total = 0;
+    checkboxes.forEach(cb => {
+      total += parseFloat(cb.dataset.preco) || 0;
+    });
+    document.getElementById('total').textContent = 'R$ ' + total.toFixed(2);
+    document.getElementById('qtdExames').textContent = checkboxes.length;
+  }
+
+  function filtrarExames() {
+    const busca = document.getElementById('buscaExame').value.toLowerCase().trim();
+    const categoria = document.getElementById('categoriaSelect').value;
+
+    const linhas = document.querySelectorAll('#corpoExames tr');
+    let visiveis = 0;
+
+    linhas.forEach(function(linha) {
+      const nome = linha.dataset.nome || '';
+      const cat = linha.dataset.categoria || '';
+
+      let mostrar = true;
+
+      if (busca && !nome.includes(busca)) mostrar = false;
+      if (categoria && cat !== categoria) mostrar = false;
+
+      linha.style.display = mostrar ? '' : 'none';
+      if (mostrar) visiveis++;
+    });
+
+    document.getElementById('contadorExames').textContent =
+      `Mostrando ${visiveis} exame${visiveis !== 1 ? 's' : ''}`;
+
+    const semResultados = document.getElementById('semResultados');
+    if (semResultados) {
+      semResultados.style.display = visiveis === 0 ? 'block' : 'none';
+    }
+  }
+
+  function limparFiltros() {
+    document.getElementById('buscaExame').value = '';
+    document.getElementById('categoriaSelect').value = '';
+    filtrarExames();
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    filtrarExames();
+  });
+</script>
+
+<style>
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--admin-text);
+  }
+  .section-title i {
+    font-size: 1.1rem;
+  }
+  .border-bottom {
+    border-color: var(--admin-border) !important;
+  }
+</style>
+
+{% endblock %}

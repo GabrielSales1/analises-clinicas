@@ -30,23 +30,22 @@
   {% endif %}
 {% endwith %}
 
-<!-- Filtros -->
 <div class="panel mb-3">
   <div class="row g-2 align-items-end">
     <div class="col-md-4">
       <label class="form-label fw-bold small">Buscar</label>
-      <input type="text" id="buscaInput" class="form-control" placeholder="Paciente ou ID..." 
+      <input type="text" id="buscaInput" class="form-control" placeholder="Paciente ou ID..."
              oninput="filtrarSolicitacoes()">
     </div>
     <div class="col-md-3">
       <label class="form-label fw-bold small">Status</label>
       <select id="statusSelect" class="form-select" onchange="filtrarSolicitacoes()">
         <option value="">Todos</option>
-        <option value="pendente">⏳ Pendente</option>
-        <option value="coletado">🩸 Coletado</option>
-        <option value="analisando">🔬 Analisando</option>
-        <option value="concluido">✅ Concluído</option>
-        <option value="cancelado">❌ Cancelado</option>
+        <option value="pendente">Pendente</option>
+        <option value="coletado">Coletado</option>
+        <option value="analisando">Analisando</option>
+        <option value="concluido">Concluído</option>
+        <option value="cancelado">Cancelado</option>
       </select>
     </div>
     <div class="col-md-3">
@@ -69,7 +68,6 @@
   </div>
 </div>
 
-<!-- Estatísticas -->
 <div class="row g-2 mb-3">
   <div class="col-6 col-md-3">
     <div class="card bg-primary-subtle border-primary border-opacity-25">
@@ -111,7 +109,6 @@
   </div>
 </div>
 
-<!-- Tabela -->
 <div class="panel">
   {% if solicitacoes %}
   <div class="table-responsive">
@@ -241,27 +238,33 @@ function filtrarSolicitacoes() {
   const busca = document.getElementById('buscaInput').value.toLowerCase().trim();
   const status = document.getElementById('statusSelect').value;
   const prioridade = document.getElementById('prioridadeSelect').value;
-  
+
   const linhas = document.querySelectorAll('#corpoTabela tr');
   let visiveis = 0;
-  
+
   linhas.forEach(function(linha) {
     const paciente = linha.dataset.paciente || '';
     const id = linha.dataset.id || '';
     const st = linha.dataset.status || '';
     const pri = linha.dataset.prioridade || '';
-    
+
     let mostrar = true;
-    
-    if (busca && !paciente.includes(busca) && !id.includes(busca)) mostrar = false;
-    if (status && st !== status) mostrar = false;
-    if (prioridade && pri !== prioridade) mostrar = false;
-    
+
+    if (busca && !paciente.includes(busca) && !id.includes(busca)) {
+      mostrar = false;
+    }
+    if (status && st !== status) {
+      mostrar = false;
+    }
+    if (prioridade && pri !== prioridade) {
+      mostrar = false;
+    }
+
     linha.style.display = mostrar ? '' : 'none';
     if (mostrar) visiveis++;
   });
-  
-  document.getElementById('contador').textContent = 
+
+  document.getElementById('contador').textContent =
     `Mostrando ${visiveis} solicitaç${visiveis !== 1 ? 'ões' : 'ão'}`;
 }
 
@@ -276,26 +279,4 @@ document.addEventListener('DOMContentLoaded', function() {
   filtrarSolicitacoes();
 });
 </script>
-
-<style>
-  .panel {
-    background: var(--admin-surface);
-    border-radius: 12px;
-    padding: 1.25rem;
-    border: 1px solid var(--admin-border);
-    box-shadow: var(--admin-shadow-sm);
-  }
-  html[data-theme="dark"] .panel {
-    background: var(--admin-surface);
-  }
-  .border-opacity-25 {
-    --bs-border-opacity: 0.25;
-  }
-  @media (max-width: 767.98px) {
-    .panel { padding: 1rem; }
-    .page-heading { flex-direction: column; align-items: flex-start; }
-    .heading-actions { width: 100%; }
-    .heading-actions .btn { width: 100%; }
-  }
-</style>
 {% endblock %}

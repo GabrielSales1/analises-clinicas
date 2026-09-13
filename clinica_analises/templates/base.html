@@ -107,17 +107,13 @@
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-solicitacoes" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#">
+          <a class="nav-link sub" href="{{ url_for('solicitacao_listar') }}">
             <span class="nav-icon"><i class="bi bi-list-ul"></i></span>
             <span class="nav-text">Listar Solicitações</span>
           </a>
-          <a class="nav-link sub" href="#">
+          <a class="nav-link sub" href="{{ url_for('solicitacao_nova') }}">
             <span class="nav-icon"><i class="bi bi-plus-circle"></i></span>
             <span class="nav-text">Nova Solicitação</span>
-          </a>
-          <a class="nav-link sub" href="#">
-            <span class="nav-icon"><i class="bi bi-search-heart"></i></span>
-            <span class="nav-text">Situação dos Exames</span>
           </a>
         </div>
 
@@ -277,10 +273,10 @@
 
             <div class="dropdown">
               <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {% if current_user.is_authenticated and current_user.foto %}
-                  <img class="avatar-img avatar-sm" src="{{ url_for('static', filename='uploads/usuarios/' + current_user.foto) }}" alt="{{ current_user.nome }}">
+                {% if current_user.is_authenticated %}
+                  <img class="avatar-img avatar-sm" src="{{ current_user.get_foto_url() }}" alt="{{ current_user.nome }}">
                 {% else %}
-                  <img class="avatar-img avatar-sm" src="{{ url_for('static', filename='img/imgs/avatar.jpg') }}" alt="Avatar">
+                  <img class="avatar-img avatar-sm" src="{{ url_for('static', filename='img/avatar/avatar-fallback.jpg') }}" alt="Avatar">
                 {% endif %}
                 <span class="profile-name d-none d-sm-inline">{{ session.get('usuario_nome', 'Usuário') }}</span>
               </button>
