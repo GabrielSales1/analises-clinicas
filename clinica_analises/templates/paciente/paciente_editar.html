@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Paciente | Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-pencil-square"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Editar Paciente</h1>
+      <p class="text-muted small">Atualize os dados do usuário e do paciente</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('paciente_detalhes', id=paciente.id) }}" class="btn btn-outline-info">
+      <i class="bi bi-eye me-1"></i> Ver Detalhes
+    </a>
+    <a href="{{ url_for('paciente_listar') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Voltar
+    </a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="panel">
+  <form method="POST" action="{{ url_for('paciente_editar', id=paciente.id) }}" enctype="multipart/form-data">
+
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-camera text-primary"></i> Foto de Perfil
+      </h5>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-md-3 text-center">
+          <img id="previewFoto"
+               src="{{ paciente.usuario.get_foto_url() }}"
+               alt="Preview"
+               style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--admin-border);">
+        </div>
+
+        <div class="col-md-9">
+          <label for="foto" class="form-label fw-bold">Trocar foto</label>
+          <input type="file" class="form-control" id="foto" name="foto"
+                 accept="image/*" onchange="previewImagem(event)">
+          <div class="form-text">Deixe em branco para manter a foto atual</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-person text-primary"></i> Dados do Usuário
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="nome" class="form-label fw-bold">
+            Nome completo <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="nome" name="nome"
+                 value="{{ paciente.usuario.nome }}" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="email" class="form-label fw-bold">
+            E-mail <span class="text-danger">*</span>
+          </label>
+          <input type="email" class="form-control" id="email" name="email"
+                 value="{{ paciente.usuario.email }}" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="senha" class="form-label fw-bold">
+            Nova Senha <span class="text-muted small">(deixe em branco para manter)</span>
+          </label>
+          <input type="password" class="form-control" id="senha" name="senha"
+                 placeholder="Digite a nova senha">
+        </div>
+
+        <div class="col-md-6">
+          <label for="confirmar_senha" class="form-label fw-bold">
+            Confirmar Nova Senha
+          </label>
+          <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha"
+                 placeholder="Confirme a nova senha">
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-clipboard2-pulse text-primary"></i> Dados do Paciente
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label for="data_nascimento" class="form-label fw-bold">
+            Data de Nascimento <span class="text-danger">*</span>
+          </label>
+          <input type="date" class="form-control" id="data_nascimento" name="data_nascimento"
+                 value="{{ paciente.data_nascimento }}" required>
+        </div>
+
+        <div class="col-md-4">
+          <label for="cpf" class="form-label fw-bold">
+            CPF <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="cpf" name="cpf"
+                 value="{{ paciente.cpf }}" maxlength="14" required>
+        </div>
+
+        <div class="col-md-4">
+          <label for="convenio" class="form-label fw-bold">Convênio</label>
+          <input type="text" class="form-control" id="convenio" name="convenio"
+                 value="{{ paciente.convenio or '' }}">
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-heart-pulse text-primary"></i> Dados Médicos
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="historico_medico" class="form-label fw-bold">Histórico Médico</label>
+          <textarea class="form-control" id="historico_medico" name="historico_medico"
+                    rows="3">{{ paciente.historico_medico or '' }}</textarea>
+        </div>
+
+        <div class="col-md-6">
+          <label for="alergias" class="form-label fw-bold">Alergias</label>
+          <textarea class="form-control" id="alergias" name="alergias"
+                    rows="3">{{ paciente.alergias or '' }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+      <a href="{{ url_for('paciente_listar') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-x-circle me-1"></i> Cancelar
+      </a>
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-check2-circle me-1"></i> Salvar Alterações
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  function previewImagem(event) {
+    const input = event.target;
+    const preview = document.getElementById('previewFoto');
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  document.getElementById('cpf').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.slice(0, 11);
+
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+
+    e.target.value = value;
+  });
+
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const senha = document.getElementById('senha').value;
+    const confirmar = document.getElementById('confirmar_senha').value;
+
+    if (senha && senha !== confirmar) {
+      e.preventDefault();
+      alert('As senhas não coincidem.');
+      return false;
+    }
+  });
+</script>
+
+<style>
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--admin-text);
+  }
+  .section-title i {
+    font-size: 1.1rem;
+  }
+</style>
+
+{% endblock %}
