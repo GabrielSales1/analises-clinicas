@@ -33,7 +33,6 @@
 <div class="panel">
   <form method="POST" action="{{ url_for('usuario_novo') }}" enctype="multipart/form-data">
 
-    <!-- FOTO -->
     <div class="mb-4">
       <h5 class="section-title mb-3">
         <i class="bi bi-camera text-primary"></i> Foto de Perfil
@@ -42,7 +41,7 @@
       <div class="row g-3 align-items-center">
         <div class="col-md-3 text-center">
           <img id="previewFoto"
-               src="{{ url_for('static', filename='img/imgs/avatar.jpg') }}"
+               src="{{ url_for('static', filename='img/avatar/avatar-fallback.jpg') }}"
                alt="Preview"
                style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--admin-border);">
         </div>
@@ -58,7 +57,6 @@
 
     <hr>
 
-    <!-- DADOS BÁSICOS -->
     <div class="mb-4">
       <h5 class="section-title mb-3">
         <i class="bi bi-person text-primary"></i> Dados do Usuário
@@ -101,7 +99,6 @@
 
     <hr>
 
-    <!-- TIPO DE USUÁRIO -->
     <div class="mb-4">
       <h5 class="section-title mb-3">
         <i class="bi bi-person-badge text-primary"></i> Tipo de Usuário
@@ -134,7 +131,6 @@
 
     <hr>
 
-    <!-- BOTÕES -->
     <div class="d-flex flex-wrap gap-2 justify-content-end">
       <a href="{{ url_for('usuario_listar') }}" class="btn btn-outline-secondary">
         <i class="bi bi-x-circle me-1"></i> Cancelar

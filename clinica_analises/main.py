@@ -87,6 +87,7 @@ from controllers.Exames_controller import *
 from controllers.Solicitacoes_controller import *
 from controllers.usuarios_controller import *
 from controllers.paciente_controller import *
+from controllers.Funcionarios_controller import * 
 
 
 if __name__ == '__main__':

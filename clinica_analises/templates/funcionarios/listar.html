@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Listar Funcionários{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 mb-0 text-gray-800">Funcionários</h2>
+    <a href="{{ url_for('novo_funcionario') }}" class="btn btn-primary">
+        <i class="bi bi-person-plus"></i> Novo Funcionário
+    </a>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Cargo</th>
+                        <th>Registro</th>
+                        <th>Salário</th>
+                        <th>Contratação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for func in funcionarios %}
+                    <tr>
+                        <td>{{ func.id }}</td>
+                        <td>{{ func.usuario.nome }}</td>
+                        <td>{{ func.usuario.email }}</td>
+                        <td>{{ func.cargo or '-' }}</td>
+                        <td>{{ func.registro_profissional or '-' }}</td>
+                        <td>{{ func.salario or '-' }}</td>
+                        <td>{{ func.data_contratacao or '-' }}</td>
+                        <td>
+                            <!-- Botão Editar -->
+                            <a href="{{ url_for('editar_funcionario', id=func.id) }}"
+                                class="btn btn-sm btn-outline-primary" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+
+                            <!-- Botão Excluir (form POST + confirmação) -->
+                            <form action="{{ url_for('deletar_funcionario', id=func.id) }}" method="POST"
+                                class="d-inline"
+                                onsubmit="return confirm('Tem certeza que deseja excluir o funcionário {{ func.usuario.nome }}? Esta ação também removerá o usuário vinculado.');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            Nenhum funcionário cadastrado.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

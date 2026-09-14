@@ -64,7 +64,7 @@ def usuario_novo():
         db.session.commit()
 
         if tipo == 'funcionario':
-            return redirect(url_for('funcionario_novo', usuario_id=usuario.id))
+            return redirect(url_for('novo_funcionario', usuario_id=usuario.id))
         elif tipo == 'paciente':
             return redirect(url_for('paciente_novo', usuario_id=usuario.id))
         else:

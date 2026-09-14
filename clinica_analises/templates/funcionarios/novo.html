@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Funcionário | Laboratório de Análises Clínicas{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div class="page-heading-copy">
+    <span class="page-icon"><i class="bi bi-person-badge"></i></span>
+    <div>
+      <h1 class="h3 mb-0">Novo Funcionário</h1>
+      <p class="text-muted small">Preencha os dados para cadastrar um novo funcionário</p>
+    </div>
+  </div>
+  <div class="heading-actions">
+    <a href="{{ url_for('listar_funcionarios') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Voltar
+    </a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="panel">
+  <form method="POST" action="{{ url_for('novo_funcionario') }}" enctype="multipart/form-data">
+
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-camera text-primary"></i> Foto de Perfil
+      </h5>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-md-3 text-center">
+          <img id="previewFoto"
+               src="{{ url_for('static', filename='img/avatar/avatar-fallback.jpg') }}"
+               alt="Preview"
+               style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--admin-border);">
+        </div>
+
+        <div class="col-md-9">
+          <label for="foto" class="form-label fw-bold">Escolha uma foto</label>
+          <input type="file" class="form-control" id="foto" name="foto"
+                 accept="image/*" onchange="previewImagem(event)">
+          <div class="form-text">Formatos aceitos: PNG, JPG, JPEG, WEBP (máx. 2MB)</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-person text-primary"></i> Dados de Acesso
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="nome" class="form-label fw-bold">
+            Nome completo <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="nome" name="nome"
+                 placeholder="Digite o nome completo" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="email" class="form-label fw-bold">
+            E-mail <span class="text-danger">*</span>
+          </label>
+          <input type="email" class="form-control" id="email" name="email"
+                 placeholder="exemplo@email.com" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="senha" class="form-label fw-bold">
+            Senha <span class="text-danger">*</span>
+          </label>
+          <input type="password" class="form-control" id="senha" name="senha"
+                 placeholder="Digite a senha" required>
+        </div>
+
+        <div class="col-md-6">
+          <label for="confirmar_senha" class="form-label fw-bold">
+            Confirmar senha <span class="text-danger">*</span>
+          </label>
+          <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha"
+                 placeholder="Confirme a senha" required>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="mb-4">
+      <h5 class="section-title mb-3">
+        <i class="bi bi-briefcase text-primary"></i> Dados Profissionais
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="cargo" class="form-label fw-bold">Cargo</label>
+          <input type="text" class="form-control" id="cargo" name="cargo"
+                 placeholder="Ex: Biomédico, Técnico, Recepcionista">
+        </div>
+
+        <div class="col-md-6">
+          <label for="registro_profissional" class="form-label fw-bold">Registro Profissional</label>
+          <input type="text" class="form-control" id="registro_profissional" name="registro_profissional"
+                 placeholder="Ex: CRBM-12345">
+        </div>
+
+        <div class="col-md-6">
+          <label for="salario" class="form-label fw-bold">Salário</label>
+          <input type="text" class="form-control" id="salario" name="salario"
+                 placeholder="Ex: 3500.00">
+        </div>
+
+        <div class="col-md-6">
+          <label for="data_contratacao" class="form-label fw-bold">Data de Contratação</label>
+          <input type="date" class="form-control" id="data_contratacao" name="data_contratacao">
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+      <a href="{{ url_for('listar_funcionarios') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-x-circle me-1"></i> Cancelar
+      </a>
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-check2-circle me-1"></i> Cadastrar Funcionário
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  function previewImagem(event) {
+    const input = event.target;
+    const preview = document.getElementById('previewFoto');
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const senha = document.getElementById('senha').value;
+    const confirmar = document.getElementById('confirmar_senha').value;
+
+    if (senha !== confirmar) {
+      e.preventDefault();
+      alert('As senhas não coincidem.');
+      return false;
+    }
+  });
+</script>
+
+<style>
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--admin-text);
+  }
+
+  .section-title i {
+    font-size: 1.1rem;
+  }
+</style>
+
+{% endblock %}
