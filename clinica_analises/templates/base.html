@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,9 +21,11 @@
     <aside class="admin-sidebar" id="adminSidebar" aria-label="Menu principal">
       <div class="sidebar-header">
         <a class="brand-mark" href="#" aria-label="Laboratório">
-          <img src="{{ url_for('static', filename='img/imgs/logo.webp') }}" alt="Logo" style="width: 68px; height: 68px; border-radius: 8px; object-fit: contain; flex-shrink: 0;">
+          <img src="{{ url_for('static', filename='img/imgs/logo.webp') }}" alt="Logo"
+            style="width: 68px; height: 68px; border-radius: 8px; object-fit: contain; flex-shrink: 0;">
           <span class="brand-copy">
-            <span class="brand-title" style="font-size: 1.05rem; font-weight: 800; line-height: 1.2;">ANALISES CLINICAS</span>
+            <span class="brand-title" style="font-size: 1.05rem; font-weight: 800; line-height: 1.2;">ANALISES
+              CLINICAS</span>
           </span>
         </a>
       </div>
@@ -35,120 +38,157 @@
 
         <div class="sidebar-divider">Administração</div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-usuarios" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-usuarios"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-people"></i></span>
           <span class="nav-text">Usuários</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-usuarios" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar Usuários</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-person-plus"></i></span>Novo Usuário</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar
+            Usuários</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-person-plus"></i></span>Novo
+            Usuário</a>
         </div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-funcionarios" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-funcionarios"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-person-badge"></i></span>
           <span class="nav-text">Funcionários</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-funcionarios" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar Funcionários</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-person-plus"></i></span>Novo Funcionário</a>
+          <a class="nav-link sub" href="{{ url_for('listar_funcionarios') }}">
+            <span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar Funcionários
+          </a>
+          <a class="nav-link sub" href="{{ url_for('novo_funcionario') }}">
+            <span class="nav-icon"><i class="bi bi-person-plus"></i></span>Novo Funcionário
+          </a>
         </div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-pacientes" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-pacientes"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-person-hearts"></i></span>
           <span class="nav-text">Pacientes</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-pacientes" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar Pacientes</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-person-plus"></i></span>Novo Paciente</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar
+            Pacientes</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-person-plus"></i></span>Novo
+            Paciente</a>
         </div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-tipos-exames" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-tipos-exames"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-clipboard2-pulse"></i></span>
           <span class="nav-text">Tipos de Exames</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-tipos-exames" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="{{url_for('listar_exames')}}"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar Exames</a>
-          <a class="nav-link sub" href="{{url_for('novo_tipo_exame')}}"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span>Novo Tipo de Exame</a>
+          <a class="nav-link sub" href="{{url_for('listar_exames')}}"><span class="nav-icon"><i
+                class="bi bi-list-ul"></i></span>Listar Exames</a>
+          <a class="nav-link sub" href="{{url_for('novo_tipo_exame')}}"><span class="nav-icon"><i
+                class="bi bi-plus-circle"></i></span>Novo Tipo de Exame</a>
         </div>
 
         <div class="sidebar-divider">Atendimento</div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-solicitacoes" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-solicitacoes"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-file-earmark-medical"></i></span>
           <span class="nav-text">Solicitações</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-solicitacoes" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar Solicitações</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span>Nova Solicitação</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-search-heart"></i></span>Situação dos Exames</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-list-ul"></i></span>Listar
+            Solicitações</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-plus-circle"></i></span>Nova
+            Solicitação</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-search-heart"></i></span>Situação dos
+            Exames</a>
         </div>
 
         <div class="sidebar-divider">Coleta</div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-coletas" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-coletas"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-droplet"></i></span>
           <span class="nav-text">Coletas</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-coletas" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-clock"></i></span>Coletas Pendentes</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-pencil-square"></i></span>Registrar Coleta</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-check-circle"></i></span>Coletas Realizadas</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-clock"></i></span>Coletas
+            Pendentes</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-pencil-square"></i></span>Registrar
+            Coleta</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-check-circle"></i></span>Coletas
+            Realizadas</a>
         </div>
 
         <div class="sidebar-divider">Análise</div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-resultados" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-resultados"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-file-earmark-check"></i></span>
           <span class="nav-text">Resultados</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-resultados" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-clock"></i></span>Resultados Pendentes</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-pencil-square"></i></span>Registrar Resultados</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-check2-square"></i></span>Validar Resultados</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-clock"></i></span>Resultados
+            Pendentes</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-pencil-square"></i></span>Registrar
+            Resultados</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-check2-square"></i></span>Validar
+            Resultados</a>
         </div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-laudos" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-laudos"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-file-earmark-pdf"></i></span>
           <span class="nav-text">Laudos</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-laudos" data-bs-parent=".sidebar-nav">
           <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-printer"></i></span>Emitir Laudo</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-check2-square"></i></span>Validar Laudo</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-search"></i></span>Consultar Laudos</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-check2-square"></i></span>Validar
+            Laudo</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-search"></i></span>Consultar
+            Laudos</a>
         </div>
 
         <div class="sidebar-divider">Acompanhamento</div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-paciente-acompanhamento" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+          data-bs-target="#submenu-paciente-acompanhamento" aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-person-circle"></i></span>
           <span class="nav-text">Meus Exames</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-paciente-acompanhamento" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-clock-history"></i></span>Histórico de Exames</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-file-earmark-text"></i></span>Visualizar Laudos</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-download"></i></span>Download / Impressão</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-clock-history"></i></span>Histórico de
+            Exames</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i
+                class="bi bi-file-earmark-text"></i></span>Visualizar Laudos</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-download"></i></span>Download /
+            Impressão</a>
         </div>
 
         <div class="sidebar-divider">Relatórios</div>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-relatorios" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-relatorios"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-bar-chart-line"></i></span>
           <span class="nav-text">Relatórios</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-relatorios" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-graph-up"></i></span>Relatórios Gerenciais</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-file-earmark-bar-graph"></i></span>Relatório de Exames</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-people"></i></span>Relatório de Pacientes</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-graph-up"></i></span>Relatórios
+            Gerenciais</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i
+                class="bi bi-file-earmark-bar-graph"></i></span>Relatório de Exames</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-people"></i></span>Relatório de
+            Pacientes</a>
         </div>
 
         <div class="sidebar-divider">Configurações</div>
@@ -158,14 +198,17 @@
           <span class="nav-text">Meu Perfil</span>
         </a>
 
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-configuracoes" aria-expanded="false">
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-configuracoes"
+          aria-expanded="false">
           <span class="nav-icon"><i class="bi bi-gear"></i></span>
           <span class="nav-text">Configurações</span>
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-configuracoes" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-sliders2"></i></span>Configurações Gerais</a>
-          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-hospital"></i></span>Dados do Laboratório</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-sliders2"></i></span>Configurações
+            Gerais</a>
+          <a class="nav-link sub" href="#"><span class="nav-icon"><i class="bi bi-hospital"></i></span>Dados do
+            Laboratório</a>
         </div>
 
         <a class="nav-link text-danger" href="{{url_for('logout')}}">
@@ -178,7 +221,8 @@
     <div class="admin-main">
       <nav class="navbar admin-navbar navbar-expand bg-white">
         <div class="container-fluid px-3 px-lg-4">
-          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="adminSidebar" aria-expanded="true" aria-label="Toggle sidebar">
+          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="adminSidebar"
+            aria-expanded="true" aria-label="Toggle sidebar">
             <span></span><span></span><span></span>
           </button>
 
@@ -191,7 +235,8 @@
               <i class="bi bi-moon-stars" data-theme-icon></i>
             </button>
             <div class="dropdown">
-              <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notificações">
+              <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                aria-label="Notificações">
                 <span class="notification-dot"></span>
                 <i class="bi bi-bell"></i>
               </button>
@@ -202,14 +247,18 @@
             </div>
 
             <div class="dropdown">
-              <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img avatar-sm" src="{{ url_for('static', filename='img/imgs/avatar.jpg') }}" alt="Avatar">
+              <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <img class="avatar-img avatar-sm" src="{{ url_for('static', filename='img/imgs/avatar.jpg') }}"
+                  alt="Avatar">
                 <span class="profile-name d-none d-sm-inline">{{ session.get('usuario_nome', 'Usuário') }}</span>
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="#">Perfil</a></li>
                 <li><a class="dropdown-item" href="#">Configurações</a></li>
-                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
                 <li><a class="dropdown-item" href="{{url_for('logout')}}">Sair</a></li>
               </ul>
             </div>
@@ -237,4 +286,5 @@
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   {% block extra_js %}{% endblock %}
 </body>
+
 </html>
