@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Meu Perfil - Laboratório de Análises Clínicas{% endblock %}
+
+{% block extra_css %}
+<style>
+  .profile-cover {
+    height: 140px;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  }
+
+  .profile-avatar-wrapper {
+    margin-top: -60px;
+    position: relative;
+    width: 120px;
+  }
+
+  .profile-avatar-wrapper .avatar-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--bs-body-bg, #fff);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+  }
+
+  .avatar-edit-btn {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0d6efd;
+    color: #fff;
+    border: 2px solid var(--bs-body-bg, #fff);
+    cursor: pointer;
+  }
+
+  .avatar-edit-btn:hover {
+    background: #0a58ca;
+  }
+
+  .profile-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+  }
+
+  .info-label {
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #6c757d;
+    font-weight: 600;
+  }
+
+  .nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 600;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: #0d6efd;
+    border-bottom: 3px solid #0d6efd;
+    background: transparent;
+  }
+
+  .tipo-badge {
+    text-transform: capitalize;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 mt-2">
+  <div>
+    <h4 class="fw-bold mb-0">Meu Perfil</h4>
+    <small class="text-muted">Gerencie suas informações pessoais e de acesso</small>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ 'danger' if category in ['error', 'danger'] else category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="row g-3">
+  <!-- Coluna esquerda: cartão de identificação -->
+  <div class="col-lg-4">
+    <div class="card profile-card">
+      <div class="profile-cover"></div>
+      <div class="card-body text-center pt-0">
+        <div class="profile-avatar-wrapper mx-auto">
+          <img class="avatar-img" src="{{ user.get_foto_url() }}" alt="Avatar">
+          <label class="avatar-edit-btn" for="avatarInput" title="Alterar foto">
+            <i class="bi bi-camera-fill"></i>
+          </label>
+        </div>
+
+        <h5 class="fw-bold mt-3 mb-0">{{ user.nome }}</h5>
+        <p class="text-muted mb-2 tipo-badge">{{ user.tipo or 'Usuário' }}</p>
+
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+          <i class="bi bi-check-circle me-1"></i> Conta ativa
+        </span>
+
+        <hr>
+
+        <div class="text-start">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-envelope text-muted"></i>
+            <span class="small">{{ user.email }}</span>
+          </div>
+
+          {% if user.tipo == 'funcionario' and user.funcionario %}
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-briefcase text-muted"></i>
+            <span class="small">{{ user.funcionario.cargo or 'Cargo não informado' }}</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-calendar-check text-muted"></i>
+            <span class="small">Desde {{ user.funcionario.data_contratacao or '—' }}</span>
+          </div>
+          {% elif user.tipo == 'paciente' and user.paciente %}
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-card-text text-muted"></i>
+            <span class="small">CPF: {{ user.paciente.cpf or 'Não informado' }}</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-shield-plus text-muted"></i>
+            <span class="small">{{ user.paciente.convenio or 'Sem convênio' }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coluna direita: abas com formulários -->
+  <div class="col-lg-8">
+    <div class="card profile-card">
+      <div class="card-body">
+        <ul class="nav nav-tabs mb-4" id="perfilTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="dados-tab" data-bs-toggle="tab" data-bs-target="#dados-pane" type="button" role="tab" aria-controls="dados-pane" aria-selected="true">
+              <i class="bi bi-person-lines-fill me-1"></i> Dados Pessoais
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="seguranca-tab" data-bs-toggle="tab" data-bs-target="#seguranca-pane" type="button" role="tab" aria-controls="seguranca-pane" aria-selected="false">
+              <i class="bi bi-shield-lock me-1"></i> Segurança
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="perfilTabsContent">
+          <!-- Aba: Dados Pessoais -->
+          <div class="tab-pane fade show active" id="dados-pane" role="tabpanel" aria-labelledby="dados-tab">
+            <form method="POST" action="{{ url_for('user_profile') }}" enctype="multipart/form-data">
+              <input type="hidden" name="form_type" value="dados_pessoais">
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="info-label" for="nome">Nome Completo</label>
+                  <input type="text" class="form-control" id="nome" name="nome"
+                         value="{{ user.nome }}" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="info-label" for="email">E-mail</label>
+                  <input type="email" class="form-control" id="email" name="email"
+                         value="{{ user.email }}" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="info-label" for="foto">Foto de Perfil</label>
+                  <input type="file" class="form-control" id="foto" name="foto" accept=".png,.jpg,.jpeg,.gif,.webp">
+                </div>
+
+                {% if user.tipo == 'funcionario' and user.funcionario %}
+                <div class="col-md-6">
+                  <label class="info-label" for="cargo">Cargo</label>
+                  <input type="text" class="form-control" id="cargo" name="cargo"
+                         value="{{ user.funcionario.cargo or '' }}">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="info-label" for="registro_profissional">Registro Profissional</label>
+                  <input type="text" class="form-control" id="registro_profissional" name="registro_profissional"
+                         value="{{ user.funcionario.registro_profissional or '' }}">
+                </div>
+
+                {% elif user.tipo == 'paciente' and user.paciente %}
+                <div class="col-md-6">
+                  <label class="info-label" for="cpf">CPF</label>
+                  <input type="text" class="form-control" id="cpf" name="cpf"
+                         value="{{ user.paciente.cpf or '' }}" placeholder="000.000.000-00">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="info-label" for="convenio">Convênio</label>
+                  <input type="text" class="form-control" id="convenio" name="convenio"
+                         value="{{ user.paciente.convenio or '' }}">
+                </div>
+
+                <div class="col-12">
+                  <label class="info-label" for="alergias">Alergias</label>
+                  <input type="text" class="form-control" id="alergias" name="alergias"
+                         value="{{ user.paciente.alergias or '' }}" placeholder="Ex: Dipirona, Látex">
+                </div>
+                {% endif %}
+              </div>
+
+              <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-primary px-4">
+                  <i class="bi bi-check2-circle me-1"></i> Salvar Alterações
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Aba: Segurança -->
+          <div class="tab-pane fade" id="seguranca-pane" role="tabpanel" aria-labelledby="seguranca-tab">
+            <form method="POST" action="{{ url_for('user_profile') }}">
+              <input type="hidden" name="form_type" value="alterar_senha">
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="info-label" for="senha_atual">Senha Atual</label>
+                  <input type="password" class="form-control" id="senha_atual" name="senha_atual" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="info-label" for="nova_senha">Nova Senha</label>
+                  <input type="password" class="form-control" id="nova_senha" name="nova_senha" required minlength="6" maxlength="25">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="info-label" for="confirmar_senha">Confirmar Nova Senha</label>
+                  <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required minlength="6" maxlength="25">
+                </div>
+              </div>
+
+              <div class="alert alert-warning mt-3 mb-0 small">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                A senha deve ter entre 6 e 25 caracteres.
+              </div>
+
+              <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-primary px-4">
+                  <i class="bi bi-shield-check me-1"></i> Atualizar Senha
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Validação de confirmação de senha antes do envio
+    const formSenha = document.querySelector('#seguranca-pane form');
+    if (formSenha) {
+      formSenha.addEventListener('submit', function (e) {
+        const novaSenha = document.getElementById('nova_senha').value;
+        const confirmarSenha = document.getElementById('confirmar_senha').value;
+        if (novaSenha !== confirmarSenha) {
+          e.preventDefault();
+          alert('A nova senha e a confirmação não coincidem.');
+        }
+      });
+    }
+
+    // Pré-visualização da foto ao selecionar novo arquivo
+    const fotoInput = document.getElementById('foto');
+    if (fotoInput) {
+      fotoInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (ev) {
+            document.querySelector('.profile-avatar-wrapper .avatar-img').src = ev.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // Clicar no ícone de câmera também abre o seletor de arquivo
+    const avatarEditBtn = document.querySelector('.avatar-edit-btn');
+    if (avatarEditBtn && fotoInput) {
+      avatarEditBtn.addEventListener('click', function () {
+        fotoInput.click();
+      });
+    }
+  });
+</script>
+{% endblock %}
