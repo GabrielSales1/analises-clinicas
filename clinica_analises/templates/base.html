@@ -224,7 +224,7 @@
           <span class="nav-chevron"><i class="bi bi-chevron-down"></i></span>
         </a>
         <div class="collapse" id="submenu-relatorios" data-bs-parent=".sidebar-nav">
-          <a class="nav-link sub" href="#">
+          <a class="nav-link sub" href="{{ url_for('managerment_reports') }}">
             <span class="nav-icon"><i class="bi bi-graph-up"></i></span>
             <span class="nav-text">Relatórios Gerenciais</span>
           </a>
@@ -240,7 +240,7 @@
 
         <div class="sidebar-divider">Configurações</div>
 
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ url_for('user_profile') }}">
           <span class="nav-icon"><i class="bi bi-person-circle"></i></span>
           <span class="nav-text">Meu Perfil</span>
         </a>
@@ -296,7 +296,7 @@
                 <span class="profile-name d-none d-sm-inline">{{ session.get('usuario_nome', 'Usuário') }}</span>
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Perfil</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('user_profile') }}">Perfil</a></li>
                 <li><a class="dropdown-item" href="#">Configurações</a></li>
                 <li>
                   <hr class="dropdown-divider">
