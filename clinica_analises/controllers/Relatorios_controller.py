@@ -365,3 +365,4 @@ def exportar_relatorio_pdf():
 
     nome_arquivo = f"relatorio_gerencial_{filtros['data_inicio']}_{filtros['data_fim']}.pdf"
     return send_file(buffer, as_attachment=True, download_name=nome_arquivo, mimetype='application/pdf')
+

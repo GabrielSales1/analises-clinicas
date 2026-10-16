@@ -176,6 +176,8 @@ from controllers.Solicitacoes_controller import *
 from controllers.usuarios_controller import *
 from controllers.paciente_controller import *
 from controllers.Funcionarios_controller import * 
+from controllers.Relatorios_controller import*
+from controllers.relatorio_exames_controller import*
 
 
 if __name__ == '__main__':

@@ -1,0 +1,552 @@
+
+{% extends "base.html" %}
+
+{% block title %}Relatórios de Exames | Laboratório{% endblock %}
+
+{% block extra_css %}
+<style>
+  .relatorio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .relatorio-titulo {
+    font-size: 1.6rem;
+    font-weight: 750;
+    margin-bottom: 6px;
+    color: var(--bs-emphasis-color);
+  }
+
+  .relatorio-subtitulo {
+    color: var(--bs-secondary-color);
+    margin: 0;
+    font-size: .92rem;
+  }
+
+  .relatorio-card {
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 3px 12px rgba(20, 40, 70, .035);
+  }
+
+  .indicador {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .indicador-icone {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-size: 1.4rem;
+  }
+
+  .icone-azul { background: #e8f1ff; color: #2764c5; }
+  .icone-verde { background: #e2f7ec; color: #198754; }
+  .icone-laranja { background: #fff0dc; color: #bd720b; }
+
+  .indicador-label {
+    color: var(--bs-secondary-color);
+    font-size: .82rem;
+    margin-bottom: 4px;
+  }
+
+  .indicador-valor {
+    font-size: 1.6rem;
+    line-height: 1.2;
+    font-weight: 750;
+    color: var(--bs-emphasis-color);
+  }
+
+  .relatorio-tabela th {
+    font-size: .76rem;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+    padding: 14px 12px;
+  }
+
+  .relatorio-tabela td {
+    font-size: .86rem;
+    padding: 13px 12px;
+    vertical-align: middle;
+  }
+
+  .situacao {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 650;
+  }
+
+  .situacao-ativo {
+    color: #177447;
+    background: #dff5e8;
+  }
+
+  .situacao-inativo {
+    color: #9b3030;
+    background: #fde7e7;
+  }
+
+  .texto-descricao {
+    max-width: 220px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .relatorio-identificacao {
+    display: none;
+  }
+
+  @media (max-width: 576px) {
+    .relatorio-card { padding: 16px; }
+    .relatorio-titulo { font-size: 1.35rem; }
+  }
+
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 12mm;
+    }
+
+    body {
+      background: white !important;
+      color: #222 !important;
+      font-size: 10px !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .admin-sidebar,
+    .sidebar-backdrop,
+    .admin-navbar,
+    .admin-footer,
+    .relatorio-filtros,
+    .relatorio-acoes,
+    .no-print {
+      display: none !important;
+    }
+
+    .admin-shell,
+    .admin-main,
+    .dashboard-content,
+    .dashboard-content > .container-fluid {
+      display: block !important;
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+
+    .relatorio-identificacao {
+      display: block !important;
+      margin-bottom: 18px;
+    }
+
+    .relatorio-card {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+      border-radius: 0 !important;
+      padding: 12px !important;
+      margin-bottom: 12px !important;
+      break-inside: avoid;
+    }
+
+    .relatorio-indicadores {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .relatorio-tabela {
+      width: 100% !important;
+      border-collapse: collapse !important;
+    }
+
+    .relatorio-tabela th,
+    .relatorio-tabela td {
+      color: #222 !important;
+      border: 1px solid #ddd !important;
+      padding: 7px !important;
+      font-size: 9px !important;
+    }
+
+    .relatorio-tabela thead {
+      display: table-header-group;
+    }
+
+    .relatorio-tabela tr {
+      break-inside: avoid;
+    }
+
+    .table-responsive {
+      overflow: visible !important;
+    }
+
+    .indicador-valor {
+      font-size: 18px !important;
+    }
+  }
+  
+.btn-imprimir-exame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 1px solid #d7e3f5;
+  border-radius: 8px;
+  background: #edf4ff;
+  color: #245bb5;
+  font-size: .8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all .2s ease;
+}
+
+.btn-imprimir-exame:hover {
+  background: #245bb5;
+  color: #fff;
+  border-color: #245bb5;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body.imprimir-exame-individual
+  #area-relatorio > *:not(.relatorio-identificacao) {
+    display: none !important;
+  }
+
+  body.imprimir-exame-individual
+  #area-relatorio .relatorio-identificacao {
+    display: block !important;
+  }
+
+  body.imprimir-exame-individual
+  #area-relatorio .relatorio-card:not(.card-exame-individual) {
+    display: none !important;
+  }
+
+  body.imprimir-exame-individual
+  #area-relatorio .card-exame-individual {
+    display: block !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  body.imprimir-exame-individual
+  .card-exame-individual .tabela-outros-exames {
+    display: none !important;
+  }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div id="area-relatorio">
+
+  <!-- Cabeçalho -->
+  <div class="relatorio-header">
+    <div>
+      <h1 class="relatorio-titulo">
+        <i class="bi bi-file-earmark-bar-graph me-2"></i>
+        Relatórios de Exames
+      </h1>
+      <p class="relatorio-subtitulo">
+        Consulta e impressão do catálogo de exames do laboratório.
+      </p>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap relatorio-acoes">
+      <button class="btn btn-outline-secondary"
+              type="button"
+              onclick="window.location.href='{{ url_for('managerment_reports') }}'">
+        <i class="bi bi-arrow-counterclockwise me-1"></i>
+        Limpar
+      </button>
+
+      <button class="btn btn-primary"
+              type="button"
+              onclick="window.print()">
+        <i class="bi bi-file-earmark-pdf me-2"></i>
+        Imprimir / Salvar PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Cabeçalho exclusivo da impressão -->
+  <div class="relatorio-identificacao">
+    <h2>LABORATÓRIO DE ANÁLISES CLÍNICAS</h2>
+    <h3>Relatório de Exames Cadastrados</h3>
+    <p>
+      Data de emissão:
+      <span id="data-emissao"></span>
+    </p>
+    <p>
+      {% if busca %}Pesquisa: {{ busca }} | {% endif %}
+      {% if categoria_selecionada %}
+        Categoria: {{ categoria_selecionada }} |
+      {% endif %}
+      {% if situacao != 'todos' %}
+        Situação:
+        {{ 'Ativos' if situacao == 'ativos' else 'Inativos' }}
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- Indicadores -->
+  <div class="row g-3 mb-4 relatorio-indicadores">
+
+    <div class="col-12 col-sm-6 col-xl-4">
+      <div class="relatorio-card h-100">
+        <div class="indicador">
+          <div class="indicador-icone icone-azul">
+            <i class="bi bi-clipboard2-pulse"></i>
+          </div>
+          <div>
+            <div class="indicador-label">Total cadastrado</div>
+            <div class="indicador-valor">{{ total_exames }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-4">
+      <div class="relatorio-card h-100">
+        <div class="indicador">
+          <div class="indicador-icone icone-verde">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <div>
+            <div class="indicador-label">Exames ativos</div>
+            <div class="indicador-valor">{{ total_ativos }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-4">
+      <div class="relatorio-card h-100">
+        <div class="indicador">
+          <div class="indicador-icone icone-laranja">
+            <i class="bi bi-slash-circle"></i>
+          </div>
+          <div>
+            <div class="indicador-label">Exames inativos</div>
+            <div class="indicador-valor">{{ total_inativos }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Filtros -->
+  <div class="relatorio-card relatorio-filtros">
+    <h2 class="h6 fw-bold mb-1">
+      <i class="bi bi-funnel me-2"></i>Filtros do relatório
+    </h2>
+    <p class="text-secondary small mb-3">
+      Pesquise e selecione os exames que deseja listar ou imprimir.
+    </p>
+
+    <form method="GET" action="{{ url_for('managerment_reports') }}">
+      <div class="row g-3">
+
+        <div class="col-12 col-md-6 col-xl-4">
+          <label for="busca" class="form-label small fw-semibold">
+            Nome, código ou categoria
+          </label>
+          <input type="search"
+                 class="form-control"
+                 id="busca"
+                 name="busca"
+                 value="{{ busca }}"
+                 placeholder="Ex.: Hemograma, HEM001...">
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-4">
+          <label for="categoria" class="form-label small fw-semibold">
+            Categoria
+          </label>
+          <select class="form-select" id="categoria" name="categoria">
+            <option value="">Todas as categorias</option>
+            {% for item in categorias %}
+              <option value="{{ item }}"
+                {% if categoria_selecionada == item %}selected{% endif %}>
+                {{ item }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-4">
+          <label for="situacao" class="form-label small fw-semibold">
+            Situação
+          </label>
+          <select class="form-select" id="situacao" name="situacao">
+            <option value="todos"
+              {% if situacao == 'todos' %}selected{% endif %}>
+              Todos
+            </option>
+            <option value="ativos"
+              {% if situacao == 'ativos' %}selected{% endif %}>
+              Somente ativos
+            </option>
+            <option value="inativos"
+              {% if situacao == 'inativos' %}selected{% endif %}>
+              Somente inativos
+            </option>
+          </select>
+        </div>
+
+        <div class="col-12 d-flex justify-content-end">
+          <button class="btn btn-primary" type="submit">
+            <i class="bi bi-search me-1"></i>Consultar
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabela -->
+  <div class="relatorio-card">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <h2 class="h6 fw-bold mb-1">Lista de exames</h2>
+        <p class="text-secondary small mb-0">
+          {{ exames | length }} registro(s) encontrado(s).
+        </p>
+      </div>
+
+      <span class="badge text-bg-light border">
+        Catálogo de exames
+      </span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover relatorio-tabela align-middle mb-0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Código</th>
+            <th>Nome do exame</th>
+            <th>Categoria</th>
+            <th>Preço</th>
+            <th>Valor de referência</th>
+            <th>Unidade</th>
+            <th>Prazo</th>
+            <th>Situação</th>
+            <th class="no-print">AÇÕES</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for exame in exames %}
+          <tr data-exame-id="{{ exame.id }}">
+            <td>{{ exame.id }}</td>
+
+            <td>{{ exame.codigo or '—' }}</td>
+
+            <td>
+              <div class="fw-semibold">{{ exame.nome }}</div>
+              {% if exame.descricao %}
+                <div class="text-secondary small texto-descricao">
+                  {{ exame.descricao }}
+                </div>
+              {% endif %}
+            </td>
+
+            <td>{{ exame.categoria }}</td>
+
+            <td>
+              {% if exame.preco is not none %}
+                R$ {{ '{:.2f}'.format(exame.preco | float) }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+
+            <td>{{ exame.valor_referencia or '—' }}</td>
+
+            <td>{{ exame.unidade_medida or '—' }}</td>
+
+            <td>{{ exame.tempo_resultado or '—' }}</td>
+
+            <td>
+              {% if exame.ativo %}
+                <span class="situacao situacao-ativo">Ativo</span>
+              {% else %}
+                <span class="situacao situacao-inativo">Inativo</span>
+              {% endif %}
+            </td>
+
+            <td class="no-print">
+  <a
+    href="{{ url_for('imprimir_exame_pdf', id=exame.id) }}"
+    class="btn-imprimir-exame"
+    title="Gerar PDF deste exame">
+
+    <i class="bi bi-file-earmark-pdf"></i>
+    Imprimir PDF
+  </a>
+</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="text-center py-5">
+              <i class="bi bi-clipboard2-x fs-2 text-secondary d-block mb-2"></i>
+              <div class="fw-semibold">Nenhum exame encontrado</div>
+              <p class="text-secondary small mb-0">
+                Tente alterar os filtros selecionados.
+              </p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-secondary small mt-3">
+      Relatório gerado a partir dos registros cadastrados no sistema.
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const elemento = document.getElementById('data-emissao');
+
+    if (elemento) {
+      elemento.textContent = new Date().toLocaleDateString('pt-BR');
+    }
+  });
+
+  
+</script>
+{% endblock %}
