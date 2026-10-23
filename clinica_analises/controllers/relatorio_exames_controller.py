@@ -1,6 +1,6 @@
 
 from flask import render_template, request, send_file, abort
-
+from db import db
 from io import BytesIO
 from decimal import Decimal
 from main import app
@@ -49,14 +49,40 @@ def relatorio_exames():
     elif situacao == 'inativos':
         consulta = consulta.filter(Exame.ativo.is_(False))
 
+    
     # Lista filtrada
     exames = consulta.order_by(Exame.nome.asc()).all()
 
-    # Indicadores gerais do catálogo
+    # Quantidade de exames por categoria, considerando os filtros
+    quantitativo_categorias = (
+        db.session.query(
+            Exame.categoria,
+            db.func.count(Exame.id).label('quantidade')
+        )
+        .filter(Exame.id.in_([exame.id for exame in exames]))
+        .group_by(Exame.categoria)
+        .order_by(Exame.categoria.asc())
+        .all()
+    )
+
+    # Dados preparados para os gráficos
+    grafico_categorias = [
+        categoria_nome
+        for categoria_nome, quantidade in quantitativo_categorias
+    ]
+
+    grafico_quantidades = [
+        quantidade
+        for categoria_nome, quantidade in quantitativo_categorias
+    ]
+
+    # Indicadores gerais do catálogo completo
     total_exames = Exame.query.count()
+
     total_ativos = Exame.query.filter(
         Exame.ativo.is_(True)
     ).count()
+
     total_inativos = Exame.query.filter(
         Exame.ativo.is_(False)
     ).count()
@@ -80,8 +106,11 @@ def relatorio_exames():
         situacao=situacao,
         total_exames=total_exames,
         total_ativos=total_ativos,
-        total_inativos=total_inativos
+        total_inativos=total_inativos,
+        grafico_categorias=grafico_categorias,
+        grafico_quantidades=grafico_quantidades
     )
+
 
 
 # Combina os critérios de pesquisa com OR
