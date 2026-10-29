@@ -83,13 +83,29 @@ def solicitacao_nova():
 def solicitacao_situacao(id):
     solicitacao = SolicitacaoExame.query.get_or_404(id)
     return render_template('solicitacoes/detalhes_solicitacao.html',user=flask_login.current_user,solicitacao=solicitacao)
-#repensei e acredito que editar não seria muito viavel, acredito que pode dar um certo conflito, entt provavelmente o cancelamento é a melhor opção 
 
 @app.route('/solicitacao/cancelar/<int:id>')
 @flask_login.login_required
-def solicitacao_cancelar(id): 
-    db.session.delete(id)
-    db.session.commit
+def solicitacao_cancelar(id):
+    solicitacao = SolicitacaoExame.query.get_or_404(id)
+    db.session.delete(solicitacao)
+    db.session.commit()
+    flash('Solicitação cancelada com sucesso.', 'success')
     return redirect(url_for('solicitacao_listar'))   
 
+@app.route('/solicitacao/concluir/<int:id>')
+@flask_login.login_required
+def solicitacao_concluir(id):
+    solicitacao = SolicitacaoExame.query.get_or_404(id)
 
+    # Atualiza a solicitação
+    solicitacao.status = 'concluido'
+
+    # Atualiza todos os itens da solicitação (forma segura)
+    itens = ItemSolicitacao.query.filter_by(solicitacao_id=solicitacao.id).all()
+    for item in itens:
+        item.status = 'concluido'
+
+    db.session.commit()
+    flash('Solicitação marcada como concluída!', 'success')
+    return redirect(url_for('solicitacao_listar'))

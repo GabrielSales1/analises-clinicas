@@ -182,4 +182,21 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         criar_usuario_padrao()
+
+        from models.SolicitacaoExame_model import ItemSolicitacao, SolicitacaoExame
+        itens_desatualizados = (
+            ItemSolicitacao.query
+            .join(SolicitacaoExame)
+            .filter(
+                SolicitacaoExame.status == 'concluido',
+                ItemSolicitacao.status != 'concluido'
+            )
+            .all()
+        )
+        if itens_desatualizados:
+            for item in itens_desatualizados:
+                item.status = 'concluido'
+            db.session.commit()
+            print(f"✅ {len(itens_desatualizados)} item(ns) sincronizado(s) com a solicitação")
+
     app.run(debug=True)
