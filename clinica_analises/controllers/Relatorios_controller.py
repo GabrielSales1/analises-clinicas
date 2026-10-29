@@ -236,6 +236,17 @@ def managerment_reports():
     )
 
 
+@app.route('/debug_status') ## APAGAR ISSO, POIS É TEMPORÁRIO
+@flask_login.login_required
+def debug_status():
+    status = db.session.query(ItemSolicitacao.status, db.func.count()).group_by(ItemSolicitacao.status).all()
+    datas = db.session.query(
+        db.func.min(SolicitacaoExame.data_agendada),
+        db.func.max(SolicitacaoExame.data_agendada),
+        db.func.count(SolicitacaoExame.id),
+    ).one()
+    return {'status': [[s, n] for s, n in status], 'datas': [str(d) for d in datas]}
+
 @app.route('/managerment_reports/exportar/excel')
 @flask_login.login_required
 def exportar_relatorio_excel():
