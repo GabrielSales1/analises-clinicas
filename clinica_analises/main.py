@@ -7,6 +7,11 @@ from models.Exame_model import Exame
 from models.Usuario_model import Usuario
 from models.Paciente_model import Paciente
 from models.Funcionario_model import Funcionario
+<<<<<<< Updated upstream
+=======
+from models.coletas_model import Coleta
+from controllers.Relatorios_controller import *
+>>>>>>> Stashed changes
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'

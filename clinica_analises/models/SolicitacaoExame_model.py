@@ -35,3 +35,6 @@ class ItemSolicitacao(db.Model):
     
     solicitacao = db.relationship("SolicitacaoExame", back_populates="itens")
     exame = db.relationship("Exame")
+
+    coleta_id = db.Column(db.Integer, db.ForeignKey('coletas.id'), nullable=True)
+    coleta = db.relationship("Coleta", backref="itens_coletados")
