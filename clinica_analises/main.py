@@ -7,11 +7,9 @@ from models.Exame_model import Exame
 from models.Usuario_model import Usuario
 from models.Paciente_model import Paciente
 from models.Funcionario_model import Funcionario
-<<<<<<< Updated upstream
-=======
 from models.coletas_model import Coleta
 from controllers.Relatorios_controller import *
->>>>>>> Stashed changes
+from controllers.Relatorios_controller import *
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -88,15 +86,121 @@ def dashboard():
     return render_template('index.html', user=flask_login.current_user)
 
 
+from werkzeug.utils import secure_filename
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/user_profile', methods=['GET', 'POST'])
+@flask_login.login_required
+def user_profile():
+    user = flask_login.current_user
+
+    if request.method == 'POST':
+        form_type = request.form.get('form_type')
+
+        if form_type == 'dados_pessoais':
+            nome = request.form.get('nome', '').strip()
+            email = request.form.get('email', '').strip()
+
+            if not nome or not email:
+                flash('Nome e e-mail são obrigatórios.', 'warning')
+                return redirect(url_for('user_profile'))
+
+            email_existente = Usuario.query.filter(
+                Usuario.email == email,
+                Usuario.id != user.id
+            ).first()
+            if email_existente:
+                flash('Este e-mail já está sendo usado por outra conta.', 'warning')
+                return redirect(url_for('user_profile'))
+
+            user.nome = nome
+            user.email = email
+
+            if user.tipo == 'funcionario' and user.funcionario:
+                user.funcionario.cargo = request.form.get('cargo', '').strip()
+                user.funcionario.registro_profissional = request.form.get('registro_profissional', '').strip()
+
+            elif user.tipo == 'paciente' and user.paciente:
+                user.paciente.cpf = request.form.get('cpf', '').strip()
+                user.paciente.convenio = request.form.get('convenio', '').strip()
+                user.paciente.alergias = request.form.get('alergias', '').strip()
+
+            arquivo = request.files.get('foto')
+            if arquivo and arquivo.filename:
+                if allowed_file(arquivo.filename):
+                    ext = arquivo.filename.rsplit('.', 1)[1].lower()
+                    foto_nome = secure_filename(f"user_{user.id}_{os.urandom(4).hex()}.{ext}")
+                    caminho = os.path.join(app.config['UPLOAD_FOLDER'], foto_nome)
+                    arquivo.save(caminho)
+                    user.foto = foto_nome
+                else:
+                    flash('Formato de imagem inválido. Use PNG, JPG, JPEG, GIF ou WEBP.', 'warning')
+                    return redirect(url_for('user_profile'))
+
+            db.session.commit()
+            flash('Dados atualizados com sucesso.', 'success')
+            return redirect(url_for('user_profile'))
+
+        elif form_type == 'alterar_senha':
+            senha_atual = request.form.get('senha_atual', '')
+            nova_senha = request.form.get('nova_senha', '')
+            confirmar_senha = request.form.get('confirmar_senha', '')
+
+            if senha_atual != user.senha:
+                flash('Senha atual incorreta.', 'danger')
+                return redirect(url_for('user_profile'))
+
+            if nova_senha != confirmar_senha:
+                flash('A nova senha e a confirmação não coincidem.', 'warning')
+                return redirect(url_for('user_profile'))
+
+            if not (6 <= len(nova_senha) <= 25):
+                flash('A nova senha deve ter entre 6 e 25 caracteres.', 'warning')
+                return redirect(url_for('user_profile'))
+
+            user.senha = nova_senha
+            db.session.commit()
+            flash('Senha atualizada com sucesso.', 'success')
+            return redirect(url_for('user_profile'))
+
+    return render_template('user_profile.html', user=user)
+
+
+
+
+
 from controllers.Exames_controller import *
 from controllers.Solicitacoes_controller import *
 from controllers.usuarios_controller import *
 from controllers.paciente_controller import *
 from controllers.Funcionarios_controller import * 
+from controllers.Relatorios_controller import*
+from controllers.relatorio_exames_controller import*
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         criar_usuario_padrao()
+
+        from models.SolicitacaoExame_model import ItemSolicitacao, SolicitacaoExame
+        itens_desatualizados = (
+            ItemSolicitacao.query
+            .join(SolicitacaoExame)
+            .filter(
+                SolicitacaoExame.status == 'concluido',
+                ItemSolicitacao.status != 'concluido'
+            )
+            .all()
+        )
+        if itens_desatualizados:
+            for item in itens_desatualizados:
+                item.status = 'concluido'
+            db.session.commit()
+            print(f"✅ {len(itens_desatualizados)} item(ns) sincronizado(s) com a solicitação")
+
     app.run(debug=True)

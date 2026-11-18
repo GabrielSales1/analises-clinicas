@@ -1,0 +1,489 @@
+{% extends "base.html" %}
+
+{% block title %}Relatórios Gerenciais - Laboratório de Análises Clínicas{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* -------- Relatórios Gerenciais -------- */
+  .reports-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .reports-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+
+  .reports-header p {
+    margin: 0;
+    color: var(--bs-secondary-color, #6c757d);
+    font-size: 0.925rem;
+  }
+
+  .reports-export-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  /* Filtros */
+  .filters-card {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #e5e7eb);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filters-card .form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color, #6c757d);
+    margin-bottom: 0.35rem;
+  }
+
+  /* KPIs */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 991px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 575px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+  }
+
+  .kpi-card {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #e5e7eb);
+    border-radius: 0.75rem;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+
+  .kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    background: color-mix(in srgb, var(--bs-primary, #0d6efd) 12%, transparent);
+    color: var(--bs-primary, #0d6efd);
+  }
+
+  .kpi-body { min-width: 0; }
+
+  .kpi-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .kpi-label {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color, #6c757d);
+    margin-bottom: 0.3rem;
+  }
+
+  .kpi-trend {
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.35rem;
+  }
+
+  .kpi-trend.up { color: #198754; }
+  .kpi-trend.down { color: #dc3545; }
+  .kpi-trend.flat { color: var(--bs-secondary-color, #6c757d); }
+
+  /* Painéis de gráfico */
+  .panel {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #e5e7eb);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    height: 100%;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .panel-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .panel-header .panel-subtitle {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color, #6c757d);
+  }
+
+  .chart-wrap { position: relative; width: 100%; }
+  .chart-wrap.chart-tall { height: 300px; }
+  .chart-wrap.chart-donut { height: 260px; }
+
+  .legend-list {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+  }
+
+  .legend-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color, #6c757d);
+  }
+
+  .legend-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Tabela de detalhamento */
+  .table-panel {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #e5e7eb);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  .table-panel table { margin-bottom: 0; }
+  .table-panel th { font-size: 0.78rem; text-transform: none; color: var(--bs-secondary-color, #6c757d); font-weight: 600; }
+  .table-panel td { vertical-align: middle; font-size: 0.9rem; }
+
+  .exam-type-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--bs-secondary-color, #6c757d);
+  }
+
+  .empty-state i { font-size: 1.8rem; display: block; margin-bottom: 0.5rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+{#
+  Variáveis esperadas do backend (Flask):
+
+  filtros = {
+      'data_inicio': '2026-08-01',
+      'data_fim': '2026-08-31',
+      'tipo_relatorio': 'exames',   # exames | pacientes | financeiro
+      'tipo_exame': ''              # id do tipo de exame ou '' para todos
+  }
+  tipos_exame = [ {'id': 1, 'nome': 'Hemograma Completo'}, ... ]
+
+  kpis = {
+      'exames_realizados': {'valor': 1284, 'variacao': 8.4, 'direcao': 'up'},
+      'pacientes_atendidos': {'valor': 932, 'variacao': 3.1, 'direcao': 'up'},
+      'tempo_medio_entrega': {'valor': '1,4 dias', 'variacao': -6.0, 'direcao': 'down'},
+      'receita_total': {'valor': 'R$ 187.450,00', 'variacao': 0.0, 'direcao': 'flat'},
+  }
+
+  grafico_mensal = { 'labels': ['Mar','Abr','Mai','Jun','Jul','Ago'], 'dados': [860,910,845,970,1105,1284] }
+  grafico_tipos  = { 'labels': ['Hemograma','Bioquímica','Urina','Hormônios','Outros'],
+                     'dados': [34, 26, 18, 14, 8],
+                     'cores': ['#2563eb','#0ea5e9','#22c55e','#f59e0b','#94a3b8'] }
+
+  detalhamento = [
+      {'tipo': 'Hemograma Completo', 'quantidade': 437, 'percentual': 34.0, 'tempo_medio': '0,8 dias', 'receita': 'R$ 21.850,00'},
+      ...
+  ]
+#}
+
+<div class="reports-header">
+  <div>
+    <h1>Relatórios Gerenciais</h1>
+    <p>Acompanhe indicadores de exames, pacientes e faturamento do laboratório.</p>
+  </div>
+  <div class="reports-export-actions">
+    <a href="{{ url_for('exportar_relatorio_excel', data_inicio=filtros.data_inicio, data_fim=filtros.data_fim, tipo_relatorio=filtros.tipo_relatorio, tipo_exame=filtros.tipo_exame) }}" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-filetype-csv me-1"></i> Exportar Excel
+    </a>
+    <a href="{{ url_for('exportar_relatorio_pdf', data_inicio=filtros.data_inicio, data_fim=filtros.data_fim, tipo_relatorio=filtros.tipo_relatorio, tipo_exame=filtros.tipo_exame) }}" class="btn btn-primary btn-sm">
+      <i class="bi bi-file-earmark-pdf me-1"></i> Exportar PDF
+    </a>
+  </div>
+</div>
+
+<form class="filters-card" method="get" action="{{ url_for('managerment_reports') }}">
+  <div class="row g-3 align-items-end">
+    <div class="col-6 col-md-3">
+      <label class="form-label" for="data_inicio">Data início</label>
+      <input type="date" class="form-control" id="data_inicio" name="data_inicio"
+             value="{{ filtros.data_inicio if filtros else '' }}">
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label" for="data_fim">Data fim</label>
+      <input type="date" class="form-control" id="data_fim" name="data_fim"
+             value="{{ filtros.data_fim if filtros else '' }}">
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label" for="tipo_relatorio">Tipo de relatório</label>
+      <select class="form-select" id="tipo_relatorio" name="tipo_relatorio">
+        <option value="exames" {{ 'selected' if filtros and filtros.tipo_relatorio == 'exames' }}>Exames</option>
+        <option value="pacientes" {{ 'selected' if filtros and filtros.tipo_relatorio == 'pacientes' }}>Pacientes</option>
+        <option value="financeiro" {{ 'selected' if filtros and filtros.tipo_relatorio == 'financeiro' }}>Financeiro</option>
+      </select>
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label" for="tipo_exame">Tipo de exame</label>
+      <select class="form-select" id="tipo_exame" name="tipo_exame">
+        <option value="">Todos</option>
+        {% for tipo in tipos_exame %}
+        <option value="{{ tipo.id }}" {{ 'selected' if filtros and filtros.tipo_exame == tipo.id|string }}>{{ tipo.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-12 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-search me-1"></i> Gerar Relatório
+      </button>
+      <a href="{{ url_for('managerment_reports') }}" class="btn btn-outline-secondary">Limpar filtros</a>
+    </div>
+  </div>
+</form>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <span class="kpi-icon"><i class="bi bi-clipboard2-pulse"></i></span>
+    <div class="kpi-body">
+      <div class="kpi-label">Exames realizados</div>
+      <div class="kpi-value">{{ kpis.exames_realizados.valor if kpis else '—' }}</div>
+      {% if kpis %}
+      <span class="kpi-trend {{ kpis.exames_realizados.direcao }}">
+        <i class="bi bi-arrow-{{ 'up-right' if kpis.exames_realizados.direcao == 'up' else 'down-right' if kpis.exames_realizados.direcao == 'down' else 'right' }}"></i>
+        {{ kpis.exames_realizados.variacao }}% vs período anterior
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <span class="kpi-icon"><i class="bi bi-people"></i></span>
+    <div class="kpi-body">
+      <div class="kpi-label">Pacientes atendidos</div>
+      <div class="kpi-value">{{ kpis.pacientes_atendidos.valor if kpis else '—' }}</div>
+      {% if kpis %}
+      <span class="kpi-trend {{ kpis.pacientes_atendidos.direcao }}">
+        <i class="bi bi-arrow-{{ 'up-right' if kpis.pacientes_atendidos.direcao == 'up' else 'down-right' if kpis.pacientes_atendidos.direcao == 'down' else 'right' }}"></i>
+        {{ kpis.pacientes_atendidos.variacao }}% vs período anterior
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <span class="kpi-icon"><i class="bi bi-hourglass-split"></i></span>
+    <div class="kpi-body">
+      <div class="kpi-label">Tempo médio de entrega</div>
+      <div class="kpi-value">{{ kpis.tempo_medio_entrega.valor if kpis else '—' }}</div>
+      {% if kpis %}
+      <span class="kpi-trend {{ kpis.tempo_medio_entrega.direcao }}">
+        <i class="bi bi-arrow-{{ 'up-right' if kpis.tempo_medio_entrega.direcao == 'up' else 'down-right' if kpis.tempo_medio_entrega.direcao == 'down' else 'right' }}"></i>
+        {{ kpis.tempo_medio_entrega.variacao }}% vs período anterior
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <span class="kpi-icon"><i class="bi bi-cash-stack"></i></span>
+    <div class="kpi-body">
+      <div class="kpi-label">Receita total</div>
+      <div class="kpi-value">{{ kpis.receita_total.valor if kpis else '—' }}</div>
+      {% if kpis %}
+      <span class="kpi-trend {{ kpis.receita_total.direcao }}">
+        <i class="bi bi-arrow-{{ 'up-right' if kpis.receita_total.direcao == 'up' else 'down-right' if kpis.receita_total.direcao == 'down' else 'right' }}"></i>
+        {{ kpis.receita_total.variacao }}% vs período anterior
+      </span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Exames realizados por mês</h2>
+          <span class="panel-subtitle">Últimos 6 meses</span>
+        </div>
+      </div>
+      <div class="chart-wrap chart-tall">
+        <canvas id="graficoMensal"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Distribuição por tipo</h2>
+          <span class="panel-subtitle">Período selecionado</span>
+        </div>
+      </div>
+      <div class="chart-wrap chart-donut">
+        <canvas id="graficoTipos"></canvas>
+      </div>
+      {% if grafico_tipos %}
+      <ul class="legend-list">
+        {% for label in grafico_tipos.labels %}
+        <li>
+          <span class="legend-dot" style="background: {{ grafico_tipos.cores[loop.index0] }};"></span>
+          {{ label }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="table-panel">
+  <div class="panel-header">
+    <div>
+      <h2>Detalhamento por tipo de exame</h2>
+      <span class="panel-subtitle">Quantidade, participação e faturamento no período</span>
+    </div>
+  </div>
+
+  {% if detalhamento %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Tipo de exame</th>
+          <th>Quantidade</th>
+          <th>% do total</th>
+          <th>Tempo médio</th>
+          <th>Receita</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in detalhamento %}
+        <tr>
+          <td>
+            <span class="exam-type-dot" style="background: {{ grafico_tipos.cores[loop.index0] if grafico_tipos and loop.index0 < grafico_tipos.cores|length else '#94a3b8' }};"></span>
+            {{ item.tipo }}
+          </td>
+          <td>{{ item.quantidade }}</td>
+          <td>{{ item.percentual }}%</td>
+          <td>{{ item.tempo_medio }}</td>
+          <td>{{ item.receita }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-bar-chart-line"></i>
+    Nenhum dado disponível para o período selecionado. Ajuste os filtros e gere o relatório novamente.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    {% if grafico_mensal %}
+    const ctxMensal = document.getElementById('graficoMensal');
+    if (ctxMensal) {
+      new Chart(ctxMensal, {
+        type: 'line',
+        data: {
+          labels: {{ grafico_mensal.labels | tojson }},
+          datasets: [{
+            label: 'Exames realizados',
+            data: {{ grafico_mensal.dados | tojson }},
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.12)',
+            tension: 0.35,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#2563eb'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+    {% endif %}
+
+    {% if grafico_tipos %}
+    const ctxTipos = document.getElementById('graficoTipos');
+    if (ctxTipos) {
+      new Chart(ctxTipos, {
+        type: 'doughnut',
+        data: {
+          labels: {{ grafico_tipos.labels | tojson }},
+          datasets: [{
+            data: {{ grafico_tipos.dados | tojson }},
+            backgroundColor: {{ grafico_tipos.cores | tojson }},
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '68%',
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+    {% endif %}
+  });
+</script>
+{% endblock %}
