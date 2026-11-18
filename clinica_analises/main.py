@@ -7,6 +7,8 @@ from models.Exame_model import Exame
 from models.Usuario_model import Usuario
 from models.Paciente_model import Paciente
 from models.Funcionario_model import Funcionario
+from models.coletas_model import Coleta
+from controllers.Relatorios_controller import *
 from controllers.Relatorios_controller import *
 
 app = Flask(__name__)
